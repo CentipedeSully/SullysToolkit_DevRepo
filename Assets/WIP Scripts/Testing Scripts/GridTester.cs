@@ -22,8 +22,9 @@ public class GridTester : MonoBehaviour
     private void Awake()
     {
         CreateValidGrid();
+        _booleanGrid.SetDebugDrawing(true);
         //LogAllCellPositionsInGrid(_booleanGrid);
-        SpawnMarkerAtAllCellPositions(_booleanGrid);
+        //SpawnMarkerAtAllCellPositions(_booleanGrid);
     }
 
     private void Update()
@@ -35,13 +36,13 @@ public class GridTester : MonoBehaviour
     //Testing Utils
     private void AttemptInvalidGridCreation()
     {
-        _booleanGrid = new GridSystem<bool>(-1, 0, -99, Vector3.zero);
+        _booleanGrid = new GridSystem<bool>(-1, 0, -99, Vector3.zero, () => new bool());
         LogGrid(_booleanGrid);
     }
 
     private void CreateValidGrid()
     {
-        _booleanGrid = new GridSystem<bool>(_width, _height, _cellSize, _origin.position);
+        _booleanGrid = new GridSystem<bool>(_width, _height, _cellSize, _origin.position, () => new bool()) ;
         LogGrid(_booleanGrid);
     }
 
@@ -93,10 +94,7 @@ public class GridTester : MonoBehaviour
     private void UpdateGridPositionTest()
     {
         _isTestingTransformOnGrid = _booleanGrid.IsPositionOnGrid(_gridPositionTestingTranform.position);
-        Debug.Log(_isTestingTransformOnGrid);
-        //if (_isTestingTransformOnGrid)
-        //    Debug.Log($"On Grid Location: {_booleanGrid.GetCellFromPosition(_gridPositionTestingTranform.position)}");
-        //else Debug.Log("Testing object not on Grid");
+        Debug.Log($"OnGrid Status: {_isTestingTransformOnGrid}, Cell Position: {_booleanGrid.GetCellFromPosition(_gridPositionTestingTranform.position)}");
     }
 
     //Logging Utils

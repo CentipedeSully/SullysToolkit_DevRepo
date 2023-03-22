@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 
 namespace SullysToolkit
@@ -18,9 +19,13 @@ namespace SullysToolkit
 
         public Vector3 Origin { get; }
 
+        private bool _isDebugDrawingActive = false;
+
+        private float _debugDrawDuration = 60;
+
         
         //Constructor
-        public GridSystem(int x, int y, float cellSize, Vector3 origin, T defaultValue = default)
+        public GridSystem(int x, int y, float cellSize, Vector3 origin, Func<T> createGridObject)
         {
             this.Width = Mathf.Max(1,x);
             this.Height = Mathf.Max(1, y); ;
@@ -31,7 +36,7 @@ namespace SullysToolkit
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
-                    _gridData[i, j] = defaultValue;
+                    _gridData[i, j] = createGridObject();
             }
         }
 
@@ -50,7 +55,7 @@ namespace SullysToolkit
                 return _gridData[x, y];
             else
             {
-                Debug.LogError($"{this} Error: CellOutOfBounds. Cant get position of cell. returning default value");
+                Debug.LogWarning($"{this} Error: CellOutOfBounds. Cant get position of cell. returning default value");
                 return default;
             }
         }
@@ -64,11 +69,11 @@ namespace SullysToolkit
         public Vector3 GetPositionFromCell(int x, int y)
         {
             if (IsCellInGrid(x,y))
-                return new Vector3( (x * CellSize) - (CellSize/2) , (y * CellSize) - (CellSize/2), 0) ;
+                return new Vector3( (x * CellSize) + (CellSize/2) + Origin.x, (y * CellSize) + (CellSize/2) + Origin.y, 0) ;
 
             else
             {
-                Debug.LogError($"{this} Error: CellOutOfBounds. Cant get position of cell. returning zero");
+                Debug.LogWarning($"{this} Error: CellOutOfBounds. Cant get position of cell. returning zero");
                 return Vector3.zero;
             }
         }
@@ -76,10 +81,10 @@ namespace SullysToolkit
         public bool IsPositionOnGrid(Vector3 position)
         {
             //establish grid bounds
-            float minX = 0;
-            float maxX = Width * CellSize;
-            float minY = 0;
-            float maxY = Height * CellSize;
+            float minX = 0 + Origin.x;
+            float maxX = (Width * CellSize) + Origin.x;
+            float minY = 0 + Origin.y;
+            float maxY = (Height * CellSize) + Origin.y;
 
             //return if position beyond bounds
             if (position.x > maxX || position.x < minX || position.y > maxY || position.y < minY)
@@ -92,23 +97,118 @@ namespace SullysToolkit
         {
             if ( IsPositionOnGrid(position))
             {
-                int xCellPositon = Mathf.FloorToInt(position.x / CellSize);
-                int yCellPosition = Mathf.FloorToInt(position.y / CellSize);
+                int xCellPositon = Mathf.FloorToInt((position.x / CellSize) - 1);
+                int yCellPosition = Mathf.FloorToInt((position.y / CellSize) - 1);
                 return (xCellPositon, yCellPosition);
             }
 
             else
             {
-                Debug.LogError($"{this} Error: Position {position} not on Grid. Returning (-1,-1) cell position");
+                Debug.LogWarning($"{this} Error: Position {position} not on Grid. Returning (-1,-1) cell position");
                 return (-1, -1);
             }
+        }
+
+        public bool IsDebugDrawingActive()
+        {
+            return _isDebugDrawingActive;
+        }
+
+        public void SetDebugDrawing(bool newValue)
+        {
+            _isDebugDrawingActive = newValue;
+
+            if (_isDebugDrawingActive)
+                DebugDrawGrid();
+        }
+
+        public void SetDebugDrawDuration(float newValue)
+        {
+            if (newValue > 0)
+                _debugDrawDuration = newValue;
+        }
+
+        public float GetDebugDrawDuration()
+        {
+            return _debugDrawDuration;
+        }
+
+        private void DebugDrawGrid()
+        {
+            //Draw Southern line
+            Debug.DrawLine(Origin, new Vector3(Origin.x + (Width * CellSize), Origin.y),Color.magenta, _debugDrawDuration);
+
+            //Draw Western line
+            Debug.DrawLine(Origin, new Vector3(Origin.x, Origin.y + (Height * CellSize)), Color.magenta, _debugDrawDuration);
+
+            for (int i = 0; i < Width; i++)
+                for (int j = 0; j < Height; j++)
+                {
+                    //Draw northern line
+                    Debug.DrawLine(new Vector3(Origin.x + (i * CellSize),Origin.y + (j * CellSize) + CellSize), 
+                                   new Vector3(Origin.x + (i * CellSize) + CellSize, Origin.y + (j * CellSize) + CellSize),
+                                   Color.magenta, _debugDrawDuration);
+
+                    //Draw Eastern line
+                    Debug.DrawLine(new Vector3(Origin.x + (i * CellSize) + CellSize, Origin.y + (j * CellSize)), 
+                                   new Vector3(Origin.x + (i * CellSize) + CellSize, Origin.y + (j * CellSize) + CellSize), 
+                                   Color.magenta, _debugDrawDuration);
+                }
+        }
+    }
+
+
+    public class Node<T>
+    {
+        //Declarations
+        private GridSystem<Node<T>> _parentGrid;
+
+        private int xPosition = -1;
+
+        private int yPosition = -1;
+
+        private T value;
+
+
+        //Constructor
+        public Node(GridSystem<Node<T>> parent, int x, int y, T defaultValue) 
+        {
+            this._parentGrid = parent;
+            this.xPosition = x;
+            this.yPosition = y;
+            this.value = defaultValue;
+        }
             
 
 
+        //Utils
+        public GridSystem<Node<T>> GetParentGrid()
+        {
+            return _parentGrid;
         }
 
-        
+        public int GetPositionX()
+        {
+            return xPosition;
+        }
+
+        public int GetPositionY()
+        {
+            return yPosition;
+        }
+
+        public T GetValue()
+        {
+            return value;
+        }
+
+        public void SetValue(T newValue)
+        {
+            value = newValue;
+        }
+
     }
+
 
 }
 
