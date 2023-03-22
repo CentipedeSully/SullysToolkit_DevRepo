@@ -30,6 +30,7 @@ public class GridTester : MonoBehaviour
     private void Update()
     {
         UpdateGridPositionTest();
+        ChangeValueOfCellOnInput();
     }
 
 
@@ -94,7 +95,9 @@ public class GridTester : MonoBehaviour
     private void UpdateGridPositionTest()
     {
         _isTestingTransformOnGrid = _booleanGrid.IsPositionOnGrid(_gridPositionTestingTranform.position);
-        Debug.Log($"OnGrid Status: {_isTestingTransformOnGrid}, Cell Position: {_booleanGrid.GetCellFromPosition(_gridPositionTestingTranform.position)}");
+        Debug.Log($"OnGrid Status: {_isTestingTransformOnGrid}, " +
+                  $"Cell Position: {_booleanGrid.GetCellFromPosition(_gridPositionTestingTranform.position)}" +
+                  $"Cell Value: {_booleanGrid.GetValueAtCell(_booleanGrid.GetCellFromPosition(_gridPositionTestingTranform.position).x, _booleanGrid.GetCellFromPosition(_gridPositionTestingTranform.position).y)}");
     }
 
     //Logging Utils
@@ -122,6 +125,15 @@ public class GridTester : MonoBehaviour
         for (int i = 0; i < grid.Width; i++)
             for (int j = 0; j < grid.Height; j++)
                 LogCellPosition(grid, i, j);
+    }
+
+    private void ChangeValueOfCellOnInput()
+    {
+        if (_isTestingTransformOnGrid && Input.GetKeyDown(KeyCode.Space))
+        {
+            (int, int) cellPositions = _booleanGrid.GetCellFromPosition(_gridPositionTestingTranform.position);
+            _booleanGrid.SetValueAtCell(cellPositions.Item1, cellPositions.Item2, true);
+        }
     }
 
 }
