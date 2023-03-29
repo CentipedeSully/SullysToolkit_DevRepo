@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 
 namespace SullysToolkit
@@ -21,9 +22,12 @@ namespace SullysToolkit
 
         void RespondToNotification(int turnNumber);
 
+        void ResetResponseFlag();
+
         ITurnBroadcaster GetTurnBroadcaster();
 
         string GetConcreteListenerNameForDebugging();
+
 
     }
 
@@ -47,27 +51,24 @@ namespace SullysToolkit
     public class TurnSystem : MonoBehaviour, ITurnBroadcaster 
     {
         //Declarations
-        private int _currentTurnCount = 1;
+        [SerializeField] private int _currentTurnCount = 1;
 
-        private int _maxTurnCount = 1;
+        [SerializeField] private int _maxTurnCount = 1;
 
-        private TurnPhase _currentPhase = 0;
+        [SerializeField] private TurnPhase _currentPhase = 0;
 
         private List<List<ITurnListener>> _listenersList;
 
 
+        //Events
+        //...
 
-        //Constructor
-        public TurnSystem(int maxTurnCount = 0)
+
+        //Monobehaviours
+        private void Awake()
         {
-            if (maxTurnCount > 1)
-                this._maxTurnCount = maxTurnCount;
-
-            //Create a list for each phase
-            for (int i = 0; i < System.Enum.GetNames(typeof(TurnPhase)).Length; i++)
-                _listenersList.Add(new List<ITurnListener>());
+            InitializeListenerLists();
         }
-
 
 
         //Interface Utils
@@ -86,6 +87,20 @@ namespace SullysToolkit
             return _maxTurnCount;
         }
 
+        public int GetListenerCount(int phase)
+        {
+            if (phase < System.Enum.GetNames(typeof(TurnPhase)).Length)
+                return _listenersList[phase].Count;
+            else return 0;
+        }
+
+        public List<ITurnListener> GetListenersInPhase(int phase)
+        {
+            if (phase < System.Enum.GetNames(typeof(TurnPhase)).Length)
+                return _listenersList[phase];
+            else return new List<ITurnListener>();
+        }
+
         public void NotifyTurnListenersOfPhaseChange()
         {
             //Make all listeners of the curent phase respond to this current phase
@@ -95,9 +110,28 @@ namespace SullysToolkit
 
         public void AddTurnListener(ITurnListener listener)
         {
-            //if the response phase of the listener is a valid phase for the turn system, then add it to the respective phase's list
+            //check if the response phase of the listener is a valid phase for the turn system
             if (listener.GetResponsePhase() < _listenersList.Count)
-                _listenersList[listener.GetResponsePhase()].Add(listener);
+            {
+                //Check if the listener already exists
+                bool isListenerAlreadyInCollection = false;
+                foreach (ITurnListener preExistingListener in _listenersList[listener.GetResponsePhase()])
+                {
+                    //if the names match, then the listener already exists. Raise the flag and break.
+                    if (listener.GetConcreteListenerNameForDebugging() == preExistingListener.GetConcreteListenerNameForDebugging())
+                    {
+                        isListenerAlreadyInCollection = true;
+                        Debug.LogWarning($"Attempting to add preExisting Listener ({listener.GetConcreteListenerNameForDebugging()}) " +
+                                         $"to the Turn System. Ignoring Command.");
+                        break;
+                    }
+                }
+
+                //Add listener to the appropriate list, if it doesn't exist already
+                if (isListenerAlreadyInCollection == false)
+                    _listenersList[listener.GetResponsePhase()].Add(listener);
+            }
+                
         }
 
         public void RemoveTurnListener(ITurnListener listener)
@@ -109,11 +143,21 @@ namespace SullysToolkit
 
         public void StartTurnSystem()
         {
-            StartCoroutine(ManageTurnPhases());
+            StartCoroutine(ManageTurnLifecycles());
         }
 
+
         //Utils
-        private IEnumerator ManageTurnPhases()
+        private void InitializeListenerLists()
+        {
+            _listenersList = new List<List<ITurnListener>>();
+
+            //Create a list for each phase
+            for (int i = 0; i < System.Enum.GetNames(typeof(TurnPhase)).Length; i++)
+                _listenersList.Add(new List<ITurnListener>());
+        }
+
+        private IEnumerator ManageTurnLifecycles()
         {
             //decide whether or not this turn system is endless
             bool isMaxTurnLimitInfinite = false;
@@ -161,7 +205,11 @@ namespace SullysToolkit
                         yield return null;
                     }
 
-                    //All IListeners have completed their respective response. Increment the phaseCounter
+                    //All IListeners have completed their respective response.
+                    //Reset their response flags and then Increment the phaseCounter
+
+                    foreach (ITurnListener listener in _listenersList[(int)_currentPhase])
+                        listener.ResetResponseFlag();
                     phaseCounter++;
                 }
 
@@ -172,5 +220,8 @@ namespace SullysToolkit
         }
 
     }
+
+    
+
 }
 
