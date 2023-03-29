@@ -12,6 +12,16 @@ public class TurnSystemTester : MonoBehaviour
 
 
     //Monos
+    private void OnEnable()
+    {
+        _turnSystem.OnMaxTurnCountReached += LogTurnSystemCompleted;
+    }
+
+    private void OnDisable()
+    {
+        _turnSystem.OnMaxTurnCountReached -= LogTurnSystemCompleted;
+    }
+
     private void Start()
     {
         //Init the test turn listeners
@@ -45,6 +55,11 @@ public class TurnSystemTester : MonoBehaviour
 
 
     //Utils
+    private void LogTurnSystemCompleted()
+    {
+        Debug.Log("Final Turn Completed. TurnSystemEnded");
+    }
+
     private void LogAllListenersInTurnSystem()
     {
         for (int i = 0; i < System.Enum.GetNames(typeof(TurnPhase)).Length; i++)
@@ -91,95 +106,4 @@ public class TurnSystemTester : MonoBehaviour
 
 
 
-public class TestTurnListener : ITurnListener
-{
-    //Declarations
-    int _responsePhase;
-    bool _isListenerTaskStarted = false;
-    bool _isListenerTaskCompleted = false;
-    string _ListenerName = "Unnamed Listener";
-    ITurnBroadcaster _broadcaster;
-    SimpleTimer _taskTimer;
 
-
-    //Constructors
-    public TestTurnListener(int turnPhase, string name, SimpleTimer taskTimer, ITurnBroadcaster turnSystem)
-    {
-        if (turnPhase >= 0)
-            this._responsePhase = turnPhase;
-
-        this._ListenerName = name;
-
-        this._taskTimer = taskTimer;
-
-        //Make sure the timer is set to something
-        if (taskTimer.GetLifespan() == 0)
-            taskTimer.SetLifespan(1);
-
-        _broadcaster = turnSystem;
-    }
-
-
-    //Interface Utils
-    public int GetResponsePhase()
-    {
-        return _responsePhase;
-    }
-
-    public string GetConcreteListenerNameForDebugging()
-    {
-        return _ListenerName;
-    }
-
-    public bool IsTurnListenerReadyToPassPhase()
-    {
-        if (_isListenerTaskStarted && _isListenerTaskCompleted)
-            return true;
-        else return false;
-    }
-
-    public void RespondToNotification(int turnNumber)
-    {
-        StartTask();
-    }
-
-    public ITurnBroadcaster GetTurnBroadcaster()
-    {
-        return _broadcaster;
-    }
-
-    public void ResetResponseFlag()
-    {
-        //unsubscribe
-        _taskTimer.OnTimerExpired -= FlagTaskAsComplete;
-
-        _isListenerTaskCompleted = false;
-        _isListenerTaskStarted = false;
-
-        //log status
-        Debug.Log($"{_ListenerName}, (phase{_responsePhase}) flags reset");
-    }
-
-
-    //Utils
-    private void StartTask()
-    {
-        _isListenerTaskStarted = true;
-
-        //subscribe
-        _taskTimer.OnTimerExpired += FlagTaskAsComplete;
-
-        //Log status
-        Debug.Log($"{_ListenerName}, (phase{_responsePhase}) task started. Beginning Timer");
-        _taskTimer.StartTimer();
-        
-    }
-
-    private void FlagTaskAsComplete()
-    {
-        _isListenerTaskCompleted = true;
-        Debug.Log($"{_ListenerName}, (phase{_responsePhase}) completed.");
-    }
-
-
-}
