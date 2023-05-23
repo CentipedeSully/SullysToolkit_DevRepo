@@ -43,7 +43,10 @@ namespace SullysToolkit
 
         private void OnDrawGizmosSelected()
         {
+            SetGizmoColor();
             DrawBoundaries();
+            DrawCameraPosition();
+            DrawMapOrigin();
         }
 
 
@@ -122,12 +125,15 @@ namespace SullysToolkit
 
 
         //Debugging
+        private void SetGizmoColor()
+        {
+            Gizmos.color = _gizmoColor;
+        }
+
         private void DrawBoundaries()
         {
             if (_mapOrigin != null)
             {
-                Gizmos.color = _gizmoColor;
-
                 //calculate the four corners
                 Vector2 bottomLeft = new Vector3(_mapOrigin.position.x - _horizontalBoundDistance, _mapOrigin.position.y - _verticalBoundDistance);
                 Vector2 topLeft = new Vector3(_mapOrigin.position.x - _horizontalBoundDistance, _mapOrigin.position.y + _verticalBoundDistance);
@@ -140,6 +146,18 @@ namespace SullysToolkit
                 Gizmos.DrawLine(topLeft, topRight); //Top
                 Gizmos.DrawLine(bottomRight, bottomLeft); //Bottom
             }
+        }
+
+        private void DrawMapOrigin()
+        {
+            if (_mapOrigin != null)
+                Gizmos.DrawWireSphere(_mapOrigin.position, .2f);
+        }
+
+        private void DrawCameraPosition()
+        {
+            if (_cameraFollowTarget != null)
+                Gizmos.DrawWireSphere(_cameraFollowTarget.position, .15f);
         }
 
         private void ListenForDebugCommands()
