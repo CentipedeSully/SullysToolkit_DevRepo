@@ -57,6 +57,9 @@ namespace SullysToolkit
                     block.SetParentCompositeBlock2D(this);
                     block.SetGrid(_grid);
                     block.transform.localPosition = new Vector3(block.GetRelativeX() * _childrenBlockSize, block.GetRelativeY() * _childrenBlockSize, block.transform.position.z);
+                    block.GetComponent<Collider2D>();
+                    //Edit block collider
+
                 }
             }
         }

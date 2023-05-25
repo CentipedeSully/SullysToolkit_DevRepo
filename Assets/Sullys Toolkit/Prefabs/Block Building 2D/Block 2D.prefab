@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6446848526906190254}
   - component: {fileID: 3122946646167960770}
   - component: {fileID: 6787705369607829347}
+  - component: {fileID: 3733949550713175202}
   m_Layer: 0
   m_Name: Block 2D
   m_TagString: Untagged
@@ -45,7 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a35c3c7a74d047d41a6df36c0334ba3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlockSystem: {fileID: 0}
   _relativeX: 0
   _relativeY: 0
 --- !u!212 &6787705369607829347
@@ -100,3 +100,29 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &3733949550713175202
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5214528547299970049}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0

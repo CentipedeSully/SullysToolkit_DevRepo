@@ -7,10 +7,14 @@ namespace SullysToolkit
     public class MouseToWorld2D : MonoBehaviour
     {
         //Declarations
+        [Header("Mouse Pointer Settings")]
         [SerializeField] private Camera _cameraReferencePerspective;
         [SerializeField] private float _zOverride = 0;
-        private Vector3 _mouseWorldPosition;
-        public bool _isDebugActive = false;
+
+        [Header("Debugging Utils")]
+        [SerializeField] public bool _isDebugActive = false;
+        [SerializeField] private Vector3 _mouseWorldPosition;
+
 
 
 
