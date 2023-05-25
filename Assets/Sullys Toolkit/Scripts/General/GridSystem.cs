@@ -97,8 +97,8 @@ namespace SullysToolkit
         {
             if ( IsPositionOnGrid(position))
             {
-                int xCellPositon = Mathf.FloorToInt((position.x / CellSize) - 1);
-                int yCellPosition = Mathf.FloorToInt((position.y / CellSize) - 1);
+                int xCellPositon = Mathf.FloorToInt((position.x / CellSize) - Origin.x);
+                int yCellPosition = Mathf.FloorToInt((position.y / CellSize) - Origin.y);
                 return (xCellPositon, yCellPosition);
             }
 

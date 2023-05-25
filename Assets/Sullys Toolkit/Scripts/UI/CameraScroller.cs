@@ -20,7 +20,8 @@ namespace SullysToolkit
         [SerializeField] private bool _isDebugActive = false;
 
         [Header("Debugging")]
-        [SerializeField] private (int, int) _scrollerMoveInput; // (xMoveInput, yMoveInput)
+        [SerializeField] [Range(-1,1)] private int _horizontalInput;
+        [SerializeField] [Range(-1, 1)] private int _verticalInput;
         [SerializeField] private Color _gizmoColor = Color.white;
 
 
@@ -43,10 +44,13 @@ namespace SullysToolkit
 
         private void OnDrawGizmosSelected()
         {
-            SetGizmoColor();
-            DrawBoundaries();
-            DrawCameraPosition();
-            DrawMapOrigin();
+            if (IsDebugActive())
+            {
+                SetGizmoColor();
+                DrawBoundaries();
+                DrawCameraPosition();
+                DrawMapOrigin();
+            }
         }
 
 
@@ -63,12 +67,12 @@ namespace SullysToolkit
 
         public void SetHorizontalInput(int newValue)
         {
-            _scrollerMoveInput.Item1 = Mathf.Clamp(newValue, -1, 1);
+            _horizontalInput = Mathf.Clamp(newValue, -1, 1);
         }
 
         public void SetVerticalInput(int newValue)
         {
-            _scrollerMoveInput.Item2 = Mathf.Clamp(newValue, -1, 1);
+            _verticalInput = Mathf.Clamp(newValue, -1, 1);
         }
 
         private void SetVirutalCameraToFollowScroller()
@@ -92,32 +96,32 @@ namespace SullysToolkit
 
 
             //positive up:  check if input == up and current position < upperbound
-            if (_scrollerMoveInput.Item2 > 0 && _cameraFollowTarget.position.y < upperBound)
+            if (_verticalInput > 0 && _cameraFollowTarget.position.y < upperBound)
                 MoveScrollerVertically();
 
             //negative down
-            else if (_scrollerMoveInput.Item2 < 0 && _cameraFollowTarget.position.y > lowerBound)
+            else if (_verticalInput < 0 && _cameraFollowTarget.position.y > lowerBound)
                 MoveScrollerVertically();
 
             //negative left
-            if (_scrollerMoveInput.Item1 < 0 && _cameraFollowTarget.position.x > leftBound)
+            if (_horizontalInput < 0 && _cameraFollowTarget.position.x > leftBound)
                 MoveScrollerHorizontally();
 
             //positive right
-            else if (_scrollerMoveInput.Item1 > 0 && _cameraFollowTarget.position.x < rightBound)
+            else if (_horizontalInput > 0 && _cameraFollowTarget.position.x < rightBound)
                 MoveScrollerHorizontally();
 
         }
 
         private void MoveScrollerVertically()
         {
-            Vector2 moveDirection = new Vector2(0, _scrollerMoveInput.Item2 * _scrollSpeed * Time.deltaTime);
+            Vector2 moveDirection = new Vector2(0, _verticalInput * _scrollSpeed * Time.deltaTime);
             _cameraFollowTarget.transform.Translate(moveDirection);
         }
 
         private void MoveScrollerHorizontally()
         {
-            Vector2 moveDirection = new Vector2(_scrollerMoveInput.Item1 * _scrollSpeed * Time.deltaTime, 0);
+            Vector2 moveDirection = new Vector2(_horizontalInput * _scrollSpeed * Time.deltaTime, 0);
             _cameraFollowTarget.transform.Translate(moveDirection);
         }
 
@@ -163,19 +167,19 @@ namespace SullysToolkit
         private void ListenForDebugCommands()
         {
             if (Input.GetKey(KeyCode.A))
-                _scrollerMoveInput.Item1 += 1;
+                _horizontalInput -= 1;
             else if (Input.GetKey(KeyCode.D))
-                _scrollerMoveInput.Item1 -= 1;
-            else _scrollerMoveInput.Item1 = 0;
+                _horizontalInput += 1;
+            else _horizontalInput = 0;
 
             if (Input.GetKey(KeyCode.W))
-                _scrollerMoveInput.Item2 += 1;
+                _verticalInput += 1;
             else if (Input.GetKey(KeyCode.S))
-                _scrollerMoveInput.Item2 -= 1;
-            else _scrollerMoveInput.Item2 = 0;
+                _verticalInput -= 1;
+            else _verticalInput = 0;
 
-            _scrollerMoveInput.Item1 = Mathf.Clamp(_scrollerMoveInput.Item1, -1, 1);
-            _scrollerMoveInput.Item2 = Mathf.Clamp(_scrollerMoveInput.Item2, -1, 1);
+           _horizontalInput = Mathf.Clamp(_horizontalInput, -1, 1);
+           _verticalInput = Mathf.Clamp(_verticalInput, -1, 1);
         }
     }
 }
