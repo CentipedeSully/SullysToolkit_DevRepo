@@ -11,7 +11,7 @@ namespace SullysToolkit
         [SerializeField] private int _relativeX;
         [SerializeField] private int _relativeY;
 
-        private BlockSystem2D _parentBlockSystem;
+        private CompositeBlock2D _parentCompositeBlock2D;
         [SerializeField] private GridSystem<bool> _boolGrid;
 
 
@@ -36,14 +36,14 @@ namespace SullysToolkit
 
 
         //Getters, Setters, and Commands
-        public BlockSystem2D GetParentBlockSystem()
+        public CompositeBlock2D GetParentCompositeBlock2D()
         {
-            return _parentBlockSystem;
+            return _parentCompositeBlock2D;
         }
 
-        public void SetParentBlockSystem(BlockSystem2D newParent)
+        public void SetParentCompositeBlock2D(CompositeBlock2D newParent)
         {
-            _parentBlockSystem = newParent;
+            _parentCompositeBlock2D = newParent;
         }
 
         public int GetRelativeX()

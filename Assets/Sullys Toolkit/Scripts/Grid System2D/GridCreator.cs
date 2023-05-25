@@ -34,4 +34,13 @@ public class GridCreator : MonoBehaviour
         return _cellSize;
     }
 
+    public Vector3 GetGridOffset()
+    {
+        return _gridOffset;
+    }
+
+    public int GetGridSize()
+    {
+        return _gridSize;
+    }
 }
