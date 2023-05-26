@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace SullysToolkit
 {
+    //Interfaces
     public interface IMouseInteractable
     {
         void LeftClick();
@@ -21,26 +23,15 @@ namespace SullysToolkit
     }
 
 
-    public interface ISelectable
-    {
-        void ConfirmSelection();
-
-        void CancelSelection();
-
-    }
-
-
-    public class GameObjectSelector : MonoBehaviour
+    public class MouseRaycaster : MonoBehaviour
     {
         //Declarations
-        [Header("Selection Settings")]
-        [SerializeField] private string _SelectorName = "Unnamed Selector";
+        [Header("Raycaster Settings")]
+        [SerializeField] private string _RaycasterName = "Unnamed Selector";
         [SerializeField] private float _raycastDistance = 50;
         [SerializeField] private Vector3 _castDirection = Vector3.back;
         [SerializeField] private LayerMask _selectableLayers;
-
-
-        [SerializeField] private GameObject _currentSelection;
+        [SerializeField] private ISelectionCache<GameObject> _selectionCache;
         [SerializeField] private MouseToWorld2D _mouseToWorld2DReference;
 
         //Debugging
@@ -51,10 +42,19 @@ namespace SullysToolkit
 
 
         //Monos
+        private void Awake()
+        {
+            _selectionCache = GetComponent<ISelectionCache<GameObject>>();
+            if (_selectionCache == null)
+                _selectionCache = new SelectionManager();
+        }
+
         private void Update()
         {
             ListenforDebugCommandsIfDebugActive();
-            SetSelectionViaMousePointer();
+
+            //SetSelectionViaRaycast();
+            ControlRaycasterViaMouseClicks();
         }
 
         private void OnDrawGizmosSelected()
@@ -67,28 +67,46 @@ namespace SullysToolkit
 
 
         //Internal Utils
-        private void FindSelectedGameObjectViaRaycastFromMousePosition()
+        private RaycastHit2D CastRayFromMouse()
         {
-            Vector2 castOrigin = _mouseToWorld2DReference.GetWorldPosition(); 
-            RaycastHit2D raycastData = Physics2D.Raycast(castOrigin, _castDirection);
+            Vector2 castOrigin = _mouseToWorld2DReference.GetWorldPosition();
+            return Physics2D.Raycast(castOrigin, _castDirection);
+        }
+
+        private void SetSelectionViaRaycast()
+        {
+            RaycastHit2D raycastData = CastRayFromMouse();
             if (raycastData.collider != null)
-                _currentSelection = raycastData.collider.gameObject;
+                _selectionCache.SetSelection(raycastData.collider.gameObject);
+            else ClearCurrentSelection();
             
         }
 
+        private void AddSelectionViaRaycast()
+        {
+            RaycastHit2D raycastData = CastRayFromMouse();
+            if (raycastData.collider != null)
+                _selectionCache.AddSelection(raycastData.collider.gameObject);
+            else ClearCurrentSelection();
+        }
 
+        private void ClearCurrentSelection()
+        {
+            _selectionCache.ClearSelection();
+        }
 
 
 
         //Getters, Setters, and Commands
-        public GameObject GetCurrentSelection()
+        public ISelectionCache<GameObject> GetSelectionCache()
         {
-            return _currentSelection;
+            return _selectionCache;
         }
 
-        public void SetCurrentSelection(GameObject newObject)
+        public void SetSelectionCache(ISelectionCache<GameObject> newCache)
         {
-            _currentSelection = newObject;
+            if (newCache != null)
+                _selectionCache = newCache;
         }
 
         public LayerMask GetSelectableLayers()
@@ -99,22 +117,6 @@ namespace SullysToolkit
         public void SetSelectableLayers(LayerMask newLayerMask)
         {
             _selectableLayers = newLayerMask;
-        }
-
-        public bool IsAnyObjectSelected()
-        {
-            return _currentSelection != null;
-        }
-
-        public void SetSelectionViaMousePointer()
-        {
-            FindSelectedGameObjectViaRaycastFromMousePosition();
-        }
-
-        public void ClearCurrentSelection()
-        {
-            if (_currentSelection != null)
-                _currentSelection = null;
         }
 
 
@@ -146,9 +148,19 @@ namespace SullysToolkit
                 if (_clearSelectionCmd)
                 {
                     _clearSelectionCmd = false;
-                    ClearCurrentSelection();
+                    if (_selectionCache != null)
+                        _selectionCache.ClearSelection();
                 }
             }
+        }
+
+        private void ControlRaycasterViaMouseClicks()
+        {
+            if (Input.GetKey(KeyCode.Mouse0))
+                SetSelectionViaRaycast();
+            else if (Input.GetKey(KeyCode.Mouse1))
+                AddSelectionViaRaycast();
+
         }
 
     }

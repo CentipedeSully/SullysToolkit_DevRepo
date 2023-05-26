@@ -18,20 +18,11 @@ namespace SullysToolkit
 
 
         //Monobehaviours
-        private void Update()
-        {
-            if (_boolGrid!= null)
-                Debug.Log( "IsBlockOverAvailableSpace: " + IsBlockOverAvailableSpace(_boolGrid));
-        }
-
-
-
+        //...
 
 
         //Internal Utils
-
-
-
+        //...
 
 
 
@@ -94,8 +85,7 @@ namespace SullysToolkit
 
 
         //Debugging
-
-
+        //...
 
 
     }
