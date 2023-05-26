@@ -153,8 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gridOffset: {x: -5, y: -5}
-  _cellSize: 1
-  _gridSize: 10
+  _cellSize: 1.5
+  _gridSize: 13
 --- !u!4 &46756053
 Transform:
   m_ObjectHideFlags: 0
@@ -351,7 +351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 0, z: 10}
+  m_FollowOffset: {x: 0, y: 0, z: -18}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -452,6 +452,9 @@ MonoBehaviour:
     m_Bits: 1
   _currentSelection: {fileID: 0}
   _mouseToWorld2DReference: {fileID: 635128499}
+  _isDebugActive: 0
+  _gizmoColor: {r: 0.98036027, g: 1, b: 0, a: 1}
+  _clearSelectionCmd: 0
 --- !u!114 &635128499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,8 +469,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cameraReferencePerspective: {fileID: 963194227}
   _zOverride: 0
-  _isDebugActive: 0
-  _mouseWorldPosition: {x: 0, y: 0, z: 0}
+  _isDebugActive: 1
+  _mouseWorldPosition: {x: 59.62079, y: -17.50578, z: 0}
 --- !u!1 &689605974
 GameObject:
   m_ObjectHideFlags: 0
@@ -1211,6 +1214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gridCreator: {fileID: 46756052}
+  _startCompositeOnMapOrigin: 1
   _isDebugActive: 1
   _rotateClockwiseCmd: 0
   _rotateCounterClockwiseCmd: 0
@@ -1235,11 +1239,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8187852599059862514, guid: 2eafb73b82f5225488a26e911b100dc1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 4.22
       objectReference: {fileID: 0}
     - target: {fileID: 8187852599059862514, guid: 2eafb73b82f5225488a26e911b100dc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.85
       objectReference: {fileID: 0}
     - target: {fileID: 8187852599059862514, guid: 2eafb73b82f5225488a26e911b100dc1, type: 3}
       propertyPath: m_LocalPosition.z

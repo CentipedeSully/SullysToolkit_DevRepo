@@ -43,19 +43,37 @@ namespace SullysToolkit
         [SerializeField] private GameObject _currentSelection;
         [SerializeField] private MouseToWorld2D _mouseToWorld2DReference;
 
+        //Debugging
+        [Header("Debugging Utils")]
+        [SerializeField] private bool _isDebugActive;
+        [SerializeField] private Color _gizmoColor;
+        [SerializeField] private bool _clearSelectionCmd;
+
 
         //Monos
+        private void Update()
+        {
+            ListenforDebugCommandsIfDebugActive();
+            SetSelectionViaMousePointer();
+        }
 
+        private void OnDrawGizmosSelected()
+        {
+            DrawMousePointer();
+        }
 
 
 
 
 
         //Internal Utils
-        private void CalculateRaycastFromMousePosition()
+        private void FindSelectedGameObjectViaRaycastFromMousePosition()
         {
             Vector2 castOrigin = _mouseToWorld2DReference.GetWorldPosition(); 
             RaycastHit2D raycastData = Physics2D.Raycast(castOrigin, _castDirection);
+            if (raycastData.collider != null)
+                _currentSelection = raycastData.collider.gameObject;
+            
         }
 
 
@@ -88,9 +106,49 @@ namespace SullysToolkit
             return _currentSelection != null;
         }
 
-        public void RaycastFromMousePosition()
+        public void SetSelectionViaMousePointer()
         {
+            FindSelectedGameObjectViaRaycastFromMousePosition();
+        }
 
+        public void ClearCurrentSelection()
+        {
+            if (_currentSelection != null)
+                _currentSelection = null;
+        }
+
+
+        public bool IsDebugActive()
+        {
+            return _isDebugActive;
+        }
+
+        public void SetDebugMode(bool newValue)
+        {
+            _isDebugActive = newValue;
+        }
+
+
+        //Debugging
+        private void DrawMousePointer()
+        {
+            Gizmos.color = _gizmoColor;
+            Vector3 mouseWorldPosition = _mouseToWorld2DReference.GetWorldPosition();
+            Vector3 debugLineStart = new Vector3(mouseWorldPosition.x, mouseWorldPosition.y, Camera.main.transform.position.z);
+            Vector3 debugLineEnd = new Vector3(mouseWorldPosition.x, mouseWorldPosition.y, _raycastDistance);
+            Gizmos.DrawLine(debugLineStart, debugLineEnd);
+        }
+
+        private void ListenforDebugCommandsIfDebugActive()
+        {
+            if (_isDebugActive)
+            {
+                if (_clearSelectionCmd)
+                {
+                    _clearSelectionCmd = false;
+                    ClearCurrentSelection();
+                }
+            }
         }
 
     }

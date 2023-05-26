@@ -10,12 +10,13 @@ namespace SullysToolkit
     public class CompositeBlock2D : MonoBehaviour
     {
         //Declarations
-        //children block settings
+        private bool _isInitializationComplete = false;
         private float _childrenBlockSize = 1;
         private List<Block2D> _childrenBlocks;
 
-        [Header("TestGrid Settings")]
+        [Header("Grid Location Settings")]
         [SerializeField] private GridCreator _gridCreator;
+        [SerializeField] private bool _startCompositeOnMapOrigin = false;
         private GridSystem<bool> _grid;
 
         [Header("Debugging Utils")]
@@ -27,12 +28,20 @@ namespace SullysToolkit
 
 
         //Monobehaviours
+        private void Awake()
+        {
+            InitializePersonalUtilities();
+        }
+
         private void Start()
         {
-            _grid = _gridCreator.GetGrid();
-            _childrenBlockSize = _gridCreator.GetCellSize();
-            _childrenBlocks = new List<Block2D>();
+            InitializeDependentUtils();
             InitializeChildBlocksIntoSafeCollection();
+
+            if (_startCompositeOnMapOrigin)
+                SetCompositeBlockPositionToGridCenter();
+
+            CompleteInitialization();
         }
 
         private void Update()
@@ -43,6 +52,17 @@ namespace SullysToolkit
 
 
         //Internal Utils
+        private void InitializePersonalUtilities()
+        {
+            _childrenBlocks = new List<Block2D>();
+        }
+
+        private void InitializeDependentUtils()
+        {
+            _grid = _gridCreator.GetGrid();
+            _childrenBlockSize = _gridCreator.GetCellSize();
+        }
+
         private void InitializeChildBlocksIntoSafeCollection()
         {
             Block2D block;
@@ -57,11 +77,21 @@ namespace SullysToolkit
                     block.SetParentCompositeBlock2D(this);
                     block.SetGrid(_grid);
                     block.transform.localPosition = new Vector3(block.GetRelativeX() * _childrenBlockSize, block.GetRelativeY() * _childrenBlockSize, block.transform.position.z);
-                    block.GetComponent<Collider2D>();
-                    //Edit block collider
-
+                    block.transform.localScale = new Vector3(_gridCreator.GetCellSize(), _gridCreator.GetCellSize(), block.transform.localScale.z);
                 }
             }
+        }
+
+        private void SetCompositeBlockPositionToGridCenter()
+        {
+            Vector2 mapCenterCell = new Vector2(Mathf.FloorToInt(_grid.Width / 2), Mathf.FloorToInt(_grid.Height / 2));
+            Vector2 mapCenterWorldCoordinates = _grid.GetPositionFromCell((int)mapCenterCell.x, (int)mapCenterCell.y);
+            transform.position = new Vector3(mapCenterWorldCoordinates.x, mapCenterWorldCoordinates.y, transform.position.z);
+        }
+
+        private void CompleteInitialization()
+        {
+            _isInitializationComplete = true;
         }
 
         private void RotateBlockZ(float angle)
@@ -84,6 +114,20 @@ namespace SullysToolkit
             RotateBlockZ(90);
         }
 
+        public bool IsInitializationComplete()
+        {
+            return _isInitializationComplete;
+        }
+
+        public bool IsDebugActive()
+        {
+            return _isDebugActive;
+        }
+
+        public void SetDebugMode(bool newValue)
+        {
+            _isDebugActive = newValue;
+        }
 
 
 
