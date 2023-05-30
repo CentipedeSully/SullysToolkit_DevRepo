@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7953845980524119001}
   - component: {fileID: 4532693454402433534}
   - component: {fileID: 3556068517845707106}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Composite Block 2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}

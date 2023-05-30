@@ -29,6 +29,7 @@ namespace SullysToolkit
     {
         //Declarations
         [SerializeField] private List<GameObject> _selectionList;
+        [SerializeField] private bool _isMultiSelectAvaialable = false;
         [SerializeField] private bool _isDegubActive = false;
 
 
@@ -47,14 +48,18 @@ namespace SullysToolkit
         {
             if (newSelection != null)
             {
-                if (!_selectionList.Contains(newSelection))
+                if (_isMultiSelectAvaialable)
                 {
-                    _selectionList.Add(newSelection);
+                    if (!_selectionList.Contains(newSelection))
+                    {
+                        _selectionList.Add(newSelection);
+                        if (_isDegubActive)
+                            Debug.Log("Added new object to the 'selection' Collection");
+                    }
                     if (_isDegubActive)
-                        Debug.Log("Added new object to the 'selection' Collection");
+                        Debug.Log("Object Already exists in collection");
                 }
-                if (_isDegubActive)
-                    Debug.Log("Object Already exists in collection");
+                else SetSelection(newSelection);
 
             }
 

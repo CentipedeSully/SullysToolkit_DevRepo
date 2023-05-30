@@ -45,15 +45,11 @@ namespace SullysToolkit
         private void Awake()
         {
             _selectionCache = GetComponent<ISelectionCache<GameObject>>();
-            if (_selectionCache == null)
-                _selectionCache = new SelectionManager();
         }
 
         private void Update()
         {
             ListenforDebugCommandsIfDebugActive();
-
-            //SetSelectionViaRaycast();
             ControlRaycasterViaMouseClicks();
         }
 
