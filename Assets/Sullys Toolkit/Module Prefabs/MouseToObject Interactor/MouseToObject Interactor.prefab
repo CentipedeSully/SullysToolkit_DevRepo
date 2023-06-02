@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7766403792972911275}
   - component: {fileID: 7766403792972911277}
   m_Layer: 0
-  m_Name: Object Interacter
+  m_Name: MouseToObject Interactor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   _cameraReferencePerspective: {fileID: 0}
   _zOverride: 0
   _isDebugActive: 0
-  _mouseWorldPosition: {x: -17.777779, y: -10, z: 0}
+  _mouseWorldPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &7766403792972911275
 MonoBehaviour:
   m_ObjectHideFlags: 0

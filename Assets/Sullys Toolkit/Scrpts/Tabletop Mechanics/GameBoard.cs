@@ -24,6 +24,8 @@ namespace SullysToolkit
 
         private GridSystem<bool> _boardGrid;
 
+        [Header("Debug Settings")]
+        [SerializeField] private bool _isDebugActive;
 
 
 
@@ -57,6 +59,7 @@ namespace SullysToolkit
         }
 
 
+
         //Getters, Setters, & Commands
         public GridSystem<bool> GetGrid()
         {
@@ -85,46 +88,56 @@ namespace SullysToolkit
 
         public List<GamePiece> GetPiecesInLayer(GameBoardLayer layer)
         {
-
+            LogStatement($"Fetching all active gamePieces in layer {layer}...");
             List<GamePiece> specifiedGamePiecesList =
                 (from gamePiece in _gamePiecesInPlay
                 where gamePiece.GetBoardLayer() == layer
                 select gamePiece).ToList();
 
+            LogStatement($"Game Pieces of layer {layer} found: {specifiedGamePiecesList.Count}");
             return specifiedGamePiecesList;
         }
 
         public void AddGamePiece(GamePiece newGamePiece, GameBoardLayer deseiredLayer, (int, int) xyDesiredPosition)
         {
+            LogStatement($"Checking if adding {newGamePiece.gameObject.name} to position ({xyDesiredPosition.Item1},{xyDesiredPosition.Item2}) is a valid");
+            bool _doesPositionExistOnBoard = _boardGrid.IsCellInGrid(xyDesiredPosition.Item1, xyDesiredPosition.Item2);
             bool _doesPieceAlreadyExistOnBoard = DoesGamePieceExistOnBoard(newGamePiece);
             bool _isPositionAlreadyOccupiedOnLayer = IsPositionOccupied(xyDesiredPosition, deseiredLayer);
-            
-            if (!_doesPieceAlreadyExistOnBoard && !_isPositionAlreadyOccupiedOnLayer)
+
+            if (!_doesPieceAlreadyExistOnBoard && !_isPositionAlreadyOccupiedOnLayer && _doesPositionExistOnBoard)
             {
-                
+                LogStatement($"Attempting to Add {newGamePiece.gameObject.name} to gameBoard...");
+                SetGamePieceAsChild(newGamePiece);
                 newGamePiece.SetGameBoard(this);
                 newGamePiece.SetBoardLayer(deseiredLayer);
-                newGamePiece.SetGridPosition(xyDesiredPosition);
-                SetGamePieceAsChild(newGamePiece);
+                newGamePiece.MoveIntoPlay(xyDesiredPosition);
 
                 if (newGamePiece.gameObject.activeSelf == false)
                     newGamePiece.gameObject.SetActive(true);
 
                 _gamePiecesInPlay.Add(newGamePiece);
             }
+            else
+                LogStatement($"Cannot add {newGamePiece.gameObject.name} to position ({xyDesiredPosition.Item1},{xyDesiredPosition.Item2})");
         }
 
         public void RemoveGamePieceFromBoard(GamePiece gamePiece)
         {
+            LogStatement($"Attempting Removal of {gamePiece.gameObject.name}...");
             if (_gamePiecesInPlay.Contains(gamePiece))
             {
                 _gamePiecesInPlay.Remove(gamePiece);
                 gamePiece.RemoveFromPlay();
+                LogStatement($"{ gamePiece.gameObject.name} removal successful");
             }
+            else
+                LogStatement($"{gamePiece.gameObject.name} not found on Gameboard");
         }
 
         public bool IsPositionOccupied((int,int) xyPosition, GameBoardLayer layer)
         {
+            LogStatement($"Checking Cell ({xyPosition.Item1},{xyPosition.Item2}) Occupancy...");
             List<GamePiece> possiblePieces = GetPiecesInLayer(layer);
 
             var occupancyQuery =
@@ -132,16 +145,26 @@ namespace SullysToolkit
                 where gamePiece.GetGridPosition() == xyPosition
                 select gamePiece;
 
+            LogStatement($"Occupancies found: {occupancyQuery.Count()}");
             if (occupancyQuery.Count() > 0)
-                return false;
-            else return true;
+                return true;
+            else return false;
         }
 
         public bool DoesGamePieceExistOnBoard(GamePiece gamePiece)
         {
+            LogStatement($"Does {gamePiece.gameObject.name} Exist On Board: { _gamePiecesInPlay.Contains(gamePiece)}");
             return _gamePiecesInPlay.Contains(gamePiece);
         }
 
+
+
+        //Debug Utils
+        private void LogStatement(string statement)
+        {
+            if (_isDebugActive)
+                Debug.Log($"{statement}");
+        }
     }
 }
 

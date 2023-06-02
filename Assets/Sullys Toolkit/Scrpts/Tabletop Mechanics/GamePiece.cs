@@ -43,6 +43,11 @@ namespace SullysToolkit
             transform.position = _bagOfHolding.position;
         }
 
+        private void ReparentGamePieceToHoldingTransform()
+        {
+            transform.SetParent(_bagOfHolding);
+        }
+
 
 
         //Getters, Setters, & Commands
@@ -97,12 +102,28 @@ namespace SullysToolkit
             return _bagOfHolding;
         }
 
+        public void SetOutOfPlayHoldingLocation(Transform newTransform)
+        {
+            _bagOfHolding = newTransform;
+        }
+
         public void RemoveFromPlay()
         {
             _isInPlay = false;
             gameObject.SetActive(false);
             ClearGamePieceBoardData();
+
+            ReparentGamePieceToHoldingTransform();
             MoveToPositionOutOfPlay();
+        }
+
+        public void MoveIntoPlay((int,int) newPosition)
+        {
+            if (_isInPlay == false)
+            {
+                _isInPlay = true;
+                SetGridPosition(newPosition);
+            }
         }
 
     }

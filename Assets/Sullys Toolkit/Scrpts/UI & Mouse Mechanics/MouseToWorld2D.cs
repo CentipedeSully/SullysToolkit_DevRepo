@@ -19,6 +19,11 @@ namespace SullysToolkit
 
 
         //Monobehaviors
+        private void Awake()
+        {
+            _cameraReferencePerspective = Camera.main;
+        }
+
         private void Update()
         {
             if (_isDebugActive)
@@ -30,8 +35,11 @@ namespace SullysToolkit
         //Utils
         public Vector3 GetWorldPosition()
         {
-            _mouseWorldPosition = _cameraReferencePerspective.ScreenToWorldPoint(Input.mousePosition);
+            if (_cameraReferencePerspective != null)
+                _mouseWorldPosition = _cameraReferencePerspective.ScreenToWorldPoint(Input.mousePosition);
+            else _mouseWorldPosition = Vector2.zero;
             _mouseWorldPosition.z = _zOverride;
+
             return _mouseWorldPosition;
         }
 
