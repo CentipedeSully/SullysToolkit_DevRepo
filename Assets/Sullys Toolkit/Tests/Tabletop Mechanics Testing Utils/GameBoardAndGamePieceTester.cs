@@ -12,6 +12,7 @@ namespace SullysToolkit
         [SerializeField] private int _xPosition;
         [SerializeField] private int _yPosition;
         [SerializeField] private GamePiece _targetSelection;
+        [SerializeField] private List<GamePiece> _countedPiecesOnPosition;
 
 
         [Header("Testing Commands")]
@@ -20,6 +21,7 @@ namespace SullysToolkit
         [SerializeField] private bool _addNewPOIToBoard;
         [SerializeField] private bool _removeSelectionFromGameboard;
         [SerializeField] private bool _addSelectionToGameboard;
+        [SerializeField] private bool _countPiecesOnPosition;
 
 
         [Header("References")]
@@ -74,6 +76,19 @@ namespace SullysToolkit
                 if (_targetSelection != null)
                     RemoveGamePieceFromGameBoard(_targetSelection);
             }
+
+            if (_countPiecesOnPosition)
+            {
+                _countPiecesOnPosition = false;
+                CountGamePiecesOnSpecifiedPosition();
+            }
+                
+
+        }
+
+        private void CountGamePiecesOnSpecifiedPosition()
+        {
+            _countedPiecesOnPosition = _gameBoardReference.GetPiecesOnPosition((_xPosition, _yPosition));
         }
 
         private void AddGamePieceToGameBoard(GamePiece gamePiece)

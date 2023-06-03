@@ -98,6 +98,18 @@ namespace SullysToolkit
             return specifiedGamePiecesList;
         }
 
+        public List<GamePiece> GetPiecesOnPosition((int,int) xyPosition)
+        {
+            LogStatement($"Fetching all actve gamePieces on position {xyPosition.Item1},{xyPosition.Item2}...");
+            List<GamePiece> querydPieces =
+                (from gamePiece in _gamePiecesInPlay
+                 where gamePiece.GetGridPosition() == xyPosition
+                 select gamePiece).ToList();
+
+            LogStatement($"GamePieces at position {xyPosition.Item1},{xyPosition.Item2} found: {querydPieces.Count}");
+            return querydPieces;
+        }
+
         public void AddGamePiece(GamePiece newGamePiece, GameBoardLayer deseiredLayer, (int, int) xyDesiredPosition)
         {
             LogStatement($"Checking if adding {newGamePiece.gameObject.name} to position ({xyDesiredPosition.Item1},{xyDesiredPosition.Item2}) is a valid");
