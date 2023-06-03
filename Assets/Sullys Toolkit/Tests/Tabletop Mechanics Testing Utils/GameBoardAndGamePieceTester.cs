@@ -11,6 +11,8 @@ namespace SullysToolkit
         [Header("Command Settings")]
         [SerializeField] private int _xPosition;
         [SerializeField] private int _yPosition;
+        [SerializeField] private int _xMoveDirection;
+        [SerializeField] private int _yMoveDirection;
         [SerializeField] private GamePiece _targetSelection;
         [SerializeField] private List<GamePiece> _countedPiecesOnPosition;
 
@@ -22,6 +24,9 @@ namespace SullysToolkit
         [SerializeField] private bool _removeSelectionFromGameboard;
         [SerializeField] private bool _addSelectionToGameboard;
         [SerializeField] private bool _countPiecesOnPosition;
+
+        [Header("Composition Testing Commands")]
+        [SerializeField] private bool _moveSelectionInDirection;
 
 
         [Header("References")]
@@ -82,6 +87,13 @@ namespace SullysToolkit
                 _countPiecesOnPosition = false;
                 CountGamePiecesOnSpecifiedPosition();
             }
+
+            if (_moveSelectionInDirection)
+            {
+                _moveSelectionInDirection = false;
+                if (_targetSelection!= null)
+                    MovePiece(_targetSelection);
+            }
                 
 
         }
@@ -107,6 +119,14 @@ namespace SullysToolkit
             GamePiece newPiece = Instantiate(prefab.gameObject, _bagOfHoldingReference).GetComponent<GamePiece>();
             newPiece.SetOutOfPlayHoldingLocation(_bagOfHoldingReference);
             return newPiece;
+        }
+
+        private void MovePiece(GamePiece gamePiece)
+        {
+            IMoveablePiece moveablePiece = gamePiece.GetComponent<IMoveablePiece>();
+
+            if (moveablePiece!= null)
+                moveablePiece.MoveToNeighborCell((_xPosition, _yPosition));
         }
 
         //Getters, Setters, & Commands

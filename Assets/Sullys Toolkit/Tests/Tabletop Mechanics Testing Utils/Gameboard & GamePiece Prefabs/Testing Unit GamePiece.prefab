@@ -94,6 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6825944910069880769}
   - component: {fileID: 6738688316492936325}
+  - component: {fileID: 3682351698039565454}
   m_Layer: 0
   m_Name: Testing Unit GamePiece
   m_TagString: Untagged
@@ -133,3 +134,21 @@ MonoBehaviour:
   _bagOfHolding: {fileID: 0}
   _gameBoard: {fileID: 0}
   _boardLayer: 1
+--- !u!114 &3682351698039565454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e849d131f0e1e478d297f1eb5a2a2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _currentMovePoints: 100
+  _maxMovePoints: 100
+  _adjacentMoveCost: 10
+  _diagonalMoveCost: 14
+  _gamePieceReference: {fileID: 0}
+  _isDebugActive: 0
