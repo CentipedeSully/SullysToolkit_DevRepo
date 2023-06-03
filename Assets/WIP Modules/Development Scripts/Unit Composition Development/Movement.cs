@@ -15,24 +15,35 @@ namespace SullysToolkit
         [SerializeField] private int _adjacentMoveCost = 10;
         [SerializeField] private int _diagonalMoveCost = 14;
 
-
         [Header("References")]
         [SerializeField] private GamePiece _gamePieceReference;
 
         [Header("Debugging Utils")]
         [SerializeField] private bool _isDebugActive = false;
 
+        //Events
+        public delegate void MovementEvent();
+        public event MovementEvent OnGamePieceMoved;
+        public event MovementEvent OnMovementEntered;
+        public event MovementEvent OnMovementExited;
+
 
 
         //Declarations
         private void Awake()
         {
-            _gamePieceReference = GetComponent<GamePiece>();
+            InitializeSettings();
         }
 
 
 
         //Internal Utils
+        private void InitializeSettings()
+        {
+            _gamePieceReference = GetComponent<GamePiece>();
+            _currentMovePoints = _maxMovePoints;
+        }
+
         private bool IsGamePieceInPlay()
         {
             return _gamePieceReference.IsInPlay();
@@ -137,6 +148,8 @@ namespace SullysToolkit
                         _gamePieceReference.SetGridPosition(xyDestination);
                         STKDebugLogger.LogStatement(_isDebugActive, $"Move Completed. New Position: " +
                             $"{_gamePieceReference.GetGridPosition().Item1},{_gamePieceReference.GetGridPosition().Item2}");
+
+                        OnGamePieceMoved?.Invoke();
                     }
 
                     else

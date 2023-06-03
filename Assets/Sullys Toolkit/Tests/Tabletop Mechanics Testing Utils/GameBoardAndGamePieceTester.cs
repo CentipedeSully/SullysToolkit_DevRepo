@@ -29,6 +29,7 @@ namespace SullysToolkit
         [SerializeField] private bool _moveSelectionInDirection;
 
 
+
         [Header("References")]
         [SerializeField] private GameBoard _gameBoardReference;
         [SerializeField] private Transform _bagOfHoldingReference;

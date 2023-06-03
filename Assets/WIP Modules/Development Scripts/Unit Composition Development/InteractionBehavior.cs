@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class Interaction : MonoBehaviour, IInteractablePiece
+    public class InteractionBehavior : MonoBehaviour, IInteractablePiece
     {
         //Declarations
         //[Header("Interaction Settings")]
@@ -26,7 +26,7 @@ namespace SullysToolkit
             throw new System.NotImplementedException();
         }
 
-        public void Interact()
+        public void TriggerEventOnInteraction()
         {
             throw new System.NotImplementedException();
         }
