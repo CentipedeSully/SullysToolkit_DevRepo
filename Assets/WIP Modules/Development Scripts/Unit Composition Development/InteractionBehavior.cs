@@ -9,9 +9,11 @@ namespace SullysToolkit
     public class InteractionBehavior : MonoBehaviour, IInteractablePiece
     {
         //Declarations
-        //[Header("Interaction Settings")]
+        [Header("Interaction Settings")]
+        [SerializeField] private GamePiece _gamePieceRef;
 
-
+        //Events
+        public delegate void InteractionEvent(InteractionBehavior subject);
         //Monobehaviours
 
 

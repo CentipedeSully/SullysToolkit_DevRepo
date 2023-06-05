@@ -9,6 +9,14 @@ namespace SullysToolkit
         GamePiece GetGamePiece();
 
         void MoveToNeighborCell((int, int) xyDirection);
+
+        int GetCurrentMovePoints();
+
+        void SetCurrentMovePoints(int value);
+
+        int GetMaxMovePoints();
+
+        void SetMaxMovePoints(int value);
     }
 
     public interface IInteractablePiece
@@ -18,11 +26,11 @@ namespace SullysToolkit
         void TriggerEventOnInteraction();
     }
 
-    public interface IInterationPerformer
+    public interface IInterationPerformerPiece
     {
         GamePiece GetGamePiece();
 
-        void InteractWithInteractable(IInteractablePiece gamePiece);
+        void InteractWithPointOfInterest(IInteractablePiece gamePiece);
     }
 
     public interface IDamageablePiece
@@ -55,50 +63,39 @@ namespace SullysToolkit
     {
         GamePiece GetGamePiece();
 
-        int GetNextLvlThreshold();
+        int GetCurrentLv();
 
-        int GetMaxLevel();
+        int GetMaxLv();
 
-        void ForceLvlUp();
+        void SetCurrentLv(int value);
 
-        int GetCurrentLevel();
-
-        void SetCurrentLevel(int value);
-
-        AnimationCurve GetExpGrowthCurve();
-
-        void SetExpGrowthCurve(AnimationCurve growthCurve);
-
-        AnimationCurve GetHealthGrowthCurve();
-
-        void SetHealthGrowthCurve(AnimationCurve growthCurve);
-
-        AnimationCurve GetAtkGrowthCurve();
-
-        void SetAtkGrowthCurve(AnimationCurve atkCurve);
-
-        AnimationCurve GetDefGrowthCurve();
-
-        void SetDefGrowthCurve();
-
-        AnimationCurve GetActionPointsGrowthCurve();
-
-        void SetActionPointsGrowthCurve(AnimationCurve apCurve);
-
-        AnimationCurve GetMovePointGrowthCurve();
-
-        void SetMovePointGrowthCurve(AnimationCurve mpCurve);
+        void LvUp();
 
         int GetCurrentExp();
 
         void SetCurrentExp(int value);
 
+        int GetExpGate();
+
         void GainExp(int value);
 
-        
+        void ClearExp();
     }
 
+    public interface IConflictAttributes
+    {
+        int GetAtk();
 
+        void SetAtk(int value);
+
+        int GetDef();
+
+        void SetDef(int value);
+
+        int GetDamage();
+
+        void SetDamage(int value);
+    }
 
 
 }

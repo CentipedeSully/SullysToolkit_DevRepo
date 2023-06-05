@@ -18,6 +18,37 @@ namespace SullysToolkit
                 return 1;
             }
         }
+
+        public static int RollDieWithModifier(int numberOfSides, int modifier)
+        {
+            return RollDie(numberOfSides) + modifier;
+        }
+
+        public static int RollManyDice(int numberOfSides, int numberOfDice)
+        {
+            int result = 0;
+            for (int i = 0; i < numberOfDice; i++)
+                result += RollDie(numberOfSides);
+            return result;
+        }
+
+        public static int RollManyDice(int numberOfSides, int numberOfDice, out int[] rollResults)
+        {
+            int totalValue = 0;
+            int result = 0;
+            int[] resultsCollection = new int[numberOfDice];
+
+
+            for (int i = 0; i < numberOfDice; i++)
+            {
+                result = RollDie(numberOfSides);
+                resultsCollection[i] = result;
+                totalValue += result;
+            }
+
+            rollResults = resultsCollection;   
+            return totalValue;
+        }
     }
 }
 

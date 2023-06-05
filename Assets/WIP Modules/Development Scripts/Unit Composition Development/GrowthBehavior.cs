@@ -9,30 +9,34 @@ namespace SullysToolkit
         //Declarations
         [Header("Current Lvl Stats")]
         [SerializeField] [Min(1)] private int _currentLv = 1;
-        [SerializeField] [Min(1)] private int _maxLv = 1;
+        [SerializeField] [Min(1)] private int _maxLv = 3;
         [SerializeField] [Min(0)] private int _currentExp;
-        [SerializeField] [Min(0)] private int _maxExpToLvlUp;
+        [SerializeField] [Min(0)] private int _nextLvExpGate;
+        [SerializeField] [Min(1)] private int _baseExpGate = 10;
+        [SerializeField] [Min(1)] private float _expGateGrowthMultiplier = 2;
 
-        [Header("Growth Curves")]
-        [SerializeField] private AnimationCurve _expGrowthCurve;
-        [SerializeField] private AnimationCurve _healthGrowthCurve;
-        [SerializeField] private AnimationCurve _atkGrowthCurve;
-        [SerializeField] private AnimationCurve _defGrowthCurve;
-        [SerializeField] private AnimationCurve _movePointsGrowthCurve;
-        [SerializeField] private AnimationCurve _actionPointsGrowthCurve;
+        [Header("Growth modifiers")]
+        [SerializeField] private int _healthBase = 2;
+        [SerializeField] private int _healthDieSize = 4;
+        [SerializeField] private int _movePointBase = 30;
+        [SerializeField] private int _movePointDieSize = 12;
+        [SerializeField] private int _atkBase = 2;
+        [SerializeField] private int _atkGrowthDieSize = 4;
+        [SerializeField] private int _defBase = 2;
+        [SerializeField] private int _defGrowthDieSize = 4;
+        [SerializeField] private int _damageBase = 2; 
+        [SerializeField] private int _damageGrowthDieSize = 2;
 
         [Header("Growable Stats")]
         [SerializeField] private bool _isHealthPresent;
         [SerializeField] private bool _isMovementBehaviorPresent;
-        [SerializeField] private bool _isInteractionBehaviorPresent;
         [SerializeField] private bool _isConflictAttributesPresent;
 
         [Header("References")]
         [SerializeField] private GamePiece _gamePieceReference;
         [SerializeField] private IHealthManager _healthReference;
         [SerializeField] private IMoveablePiece _movementReference;
-        [SerializeField] private IInterationPerformer _performInteractionBehaviorRef;
-        //[SerializeField] private IConflictAttriutes _conflictAttributesRef;
+        [SerializeField] private IConflictAttributes _conflictAttributesRef;
 
 
 
@@ -44,7 +48,7 @@ namespace SullysToolkit
 
         private void Start()
         {
-            
+            InitializeOtherExistingGamePieceAttributes();
         }
 
 
@@ -55,130 +59,199 @@ namespace SullysToolkit
             _gamePieceReference = GetComponent<GamePiece>();
             _healthReference = GetComponent<IHealthManager>();
             _movementReference = GetComponent<IMoveablePiece>();
-            _performInteractionBehaviorRef = GetComponent<IInterationPerformer>();
-            //_conflictAttributesRef = GetComponent<IConflictAttriutes>();
+            _conflictAttributesRef = GetComponent<IConflictAttributes>();
 
             if (_healthReference != null)
                 _isHealthPresent = true;
             if (_movementReference != null)
                 _isMovementBehaviorPresent = true;
-            if (_performInteractionBehaviorRef != null)
-                _isInteractionBehaviorPresent = true;
-            //if (_conflictAttributesRef != null)
-            //    _isConflictAttributesPresent = true;
+            if (_conflictAttributesRef != null)
+                _isConflictAttributesPresent = true;
 
         }
 
-        private void InitializeOtherReferenceStats()
+        private void InitializeOtherExistingGamePieceAttributes()
         {
-            //IniitalizeOther stats based on ifthey exist or not
+            InitializeHealth();
+            InitializeMovePoints();
+            InitializeConflictAttributes();
+            RecalculateExpGate();
         }
+
+        private void InitializeHealth()
+        {
+            if (_isHealthPresent)
+            {
+                int maxHealth = _healthBase;
+                if (_currentLv > 1)
+                    maxHealth += DieRoller.RollManyDice(_healthDieSize, _currentLv - 1);
+
+                _healthReference.SetMaxHealth(maxHealth);
+                _healthReference.SetCurrentHealth(maxHealth);
+            }
+                
+        }
+
+        private void InitializeMovePoints()
+        {
+            if (_isMovementBehaviorPresent)
+            {
+                int maxMovePoints = _movePointBase;
+                if (_currentLv > 1)
+                    maxMovePoints += DieRoller.RollManyDice(_movePointDieSize, _currentLv - 1);
+
+                _movementReference.SetMaxMovePoints(maxMovePoints);
+            }
+        }
+
+        private void InitializeConflictAttributes()
+        {
+            if (_isConflictAttributesPresent)
+            {
+                int atk = _atkBase;
+                int def = _defBase;
+                int damage = _damageBase;
+
+                if (_currentLv > 1)
+                {
+                    atk += DieRoller.RollManyDice(_atkGrowthDieSize, _currentLv - 1);
+                    def += DieRoller.RollManyDice(_defGrowthDieSize, _currentLv - 1);
+                    damage += DieRoller.RollManyDice(_damageGrowthDieSize, _currentLv - 1);
+                }
+
+                _conflictAttributesRef.SetAtk(atk);
+                _conflictAttributesRef.SetDef(def);
+                _conflictAttributesRef.SetDamage(damage);
+            }
+        }
+
+        private void IncrementHealth()
+        {
+            if (_isHealthPresent)
+            {
+                int maxHealth = _healthReference.GetMaxHealth();
+                maxHealth += DieRoller.RollDie(_healthDieSize);
+                _healthReference.SetMaxHealth(maxHealth);
+                _healthReference.SetCurrentHealth(maxHealth);
+            }
+        }
+
+        private void IncrementMovePoints()
+        {
+            if (_isMovementBehaviorPresent)
+            {
+                int maxMovePoints = _movementReference.GetMaxMovePoints();
+                maxMovePoints += DieRoller.RollDie(_movePointDieSize);
+                _movementReference.SetMaxMovePoints(maxMovePoints);
+            }
+        }
+
+        private void IncrementConflictAttributes()
+        {
+            if (_isConflictAttributesPresent)
+            {
+                int atk = _conflictAttributesRef.GetAtk();
+                int def = _conflictAttributesRef.GetDef();
+                int damage = _conflictAttributesRef.GetDamage();
+
+                atk += DieRoller.RollDie(_atkGrowthDieSize);
+                def += DieRoller.RollDie(_defGrowthDieSize);
+                damage += DieRoller.RollDie(_damageGrowthDieSize);
+
+
+                _conflictAttributesRef.SetAtk(atk);
+                _conflictAttributesRef.SetDef(def);
+                _conflictAttributesRef.SetDamage(damage);
+            }
+        }
+
+        private void RecalculateExpGate()
+        {
+            if (_currentLv < _maxLv)
+                _nextLvExpGate = (int)(_baseExpGate * (_currentLv - 1) * _expGateGrowthMultiplier);
+        }
+
+        private void CheckExpForLvUp()
+        {
+            if (_currentLv < _maxLv)
+            {
+                if (_currentExp >= _nextLvExpGate)
+                {
+                    _currentExp = _currentExp % _nextLvExpGate;
+                    int lvUpsDetected = (int)(_currentExp / _nextLvExpGate);
+
+                    for (int i = 0; i < lvUpsDetected; i++)
+                        LvUp();
+                }
+            }
+        }
+
+
 
 
         //Getters, Setters, & Commands
-        public void ForceLvlUp()
+
+        public GamePiece GetGamePiece()
         {
-            throw new System.NotImplementedException();
+            return _gamePieceReference;
         }
 
-        public void GainExp(int value)
+        public int GetCurrentLv()
         {
-            throw new System.NotImplementedException();
+            return _currentLv;
         }
 
-        public AnimationCurve GetActionPointsGrowthCurve()
+        public int GetMaxLv()
         {
-            throw new System.NotImplementedException();
+            return _maxLv;
         }
 
-        public AnimationCurve GetAtkGrowthCurve()
+        public void SetCurrentLv(int value)
         {
-            throw new System.NotImplementedException();
+            _currentLv = Mathf.Clamp(value, 1, _maxLv);
+            InitializeHealth();
+            InitializeMovePoints();
+            InitializeConflictAttributes();
+            RecalculateExpGate();
+        }
+
+        public void LvUp()
+        {
+            if (_currentLv < _maxLv)
+            {
+                _currentLv++;
+                IncrementHealth();
+                IncrementMovePoints();
+                IncrementConflictAttributes();
+                RecalculateExpGate();
+            }
         }
 
         public int GetCurrentExp()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public int GetCurrentLevel()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public AnimationCurve GetDefGrowthCurve()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public AnimationCurve GetExpGrowthCurve()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public GamePiece GetGamePiece()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public AnimationCurve GetHealthGrowthCurve()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public int GetMaxLevel()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public AnimationCurve GetMovePointGrowthCurve()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public int GetNextLvlThreshold()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SetActionPointsGrowthCurve(AnimationCurve apCurve)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SetAtkGrowthCurve(AnimationCurve atkCurve)
-        {
-            throw new System.NotImplementedException();
+            return _currentExp;
         }
 
         public void SetCurrentExp(int value)
         {
-            throw new System.NotImplementedException();
+            _currentExp = Mathf.Max(0, value);
+            CheckExpForLvUp();
         }
 
-        public void SetCurrentLevel(int value)
+        public int GetExpGate()
         {
-            throw new System.NotImplementedException();
+            return _nextLvExpGate;
         }
 
-        public void SetDefGrowthCurve()
+        public void GainExp(int value)
         {
-            throw new System.NotImplementedException();
+            _currentExp += Mathf.Max(0, value);
+            CheckExpForLvUp();
         }
 
-        public void SetExpGrowthCurve(AnimationCurve growthCurve)
+        public void ClearExp()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void SetHealthGrowthCurve(AnimationCurve growthCurve)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SetMovePointGrowthCurve(AnimationCurve mpCurve)
-        {
-            throw new System.NotImplementedException();
+            SetCurrentExp(0);
         }
     }
 }

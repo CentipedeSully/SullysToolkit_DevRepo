@@ -73,7 +73,7 @@ namespace SullysToolkit
             int healValue = Mathf.Max(0, value);
             SetCurrentHealth(_currentHealth + healValue);
 
-            OnHealed.Invoke(healValue);
+            OnHealed?.Invoke(healValue);
         }
 
         public void RecieveDamage(int value)
@@ -81,7 +81,7 @@ namespace SullysToolkit
             int damageValue = Mathf.Max(0, value);
             SetCurrentHealth(_currentHealth - damageValue);
 
-            OnDamaged.Invoke(damageValue);
+            OnDamaged?.Invoke(damageValue);
         }
     }
 }

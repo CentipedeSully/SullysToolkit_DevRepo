@@ -17,7 +17,7 @@ namespace SullysToolkit
         [SerializeField] private List<GamePiece> _countedPiecesOnPosition;
 
 
-        [Header("Testing Commands")]
+        [Header("Add/Remove Testing Commands")]
         [SerializeField] private bool _addNewUnitToBoard;
         [SerializeField] private bool _addNewTerrainToBoard;
         [SerializeField] private bool _addNewPOIToBoard;
@@ -25,8 +25,15 @@ namespace SullysToolkit
         [SerializeField] private bool _addSelectionToGameboard;
         [SerializeField] private bool _countPiecesOnPosition;
 
-        [Header("Composition Testing Commands")]
+        [Header("Movement Testing Commands")]
         [SerializeField] private bool _moveSelectionInDirection;
+
+        [Header("Health Management Commands")]
+        [SerializeField] private int _value;
+        [SerializeField] private bool _setCurrentHealth;
+        [SerializeField] private bool _setMaxHealth;
+        [SerializeField] private bool _damagePiece;
+        [SerializeField] private bool _healPiece;
 
 
 
@@ -51,6 +58,7 @@ namespace SullysToolkit
         //Internal Utils
         private void ListenForDebugCommands()
         {
+            //Adding/Removing
             if (_addNewUnitToBoard)
             {
                 _addNewUnitToBoard = false;
@@ -89,13 +97,44 @@ namespace SullysToolkit
                 CountGamePiecesOnSpecifiedPosition();
             }
 
+            //Movement
             if (_moveSelectionInDirection)
             {
                 _moveSelectionInDirection = false;
-                if (_targetSelection!= null)
+                if (_targetSelection != null)
                     MovePiece(_targetSelection);
             }
-                
+
+            //Health Management
+            if (_setCurrentHealth)
+            {
+                _setCurrentHealth = false;
+                if (_targetSelection != null)
+                    SetCurrentGamePieceHealth(_targetSelection);
+            }
+
+            if (_setMaxHealth)
+            {
+                _setMaxHealth = false;
+                if (_targetSelection != null)
+                    SetGamePieceMaxHealth(_targetSelection);
+
+            }
+
+            if (_damagePiece)
+            {
+                _damagePiece = false;
+                if (_targetSelection != null)
+                    DamagePiece(_targetSelection);
+            }
+
+            if (_healPiece)
+            {
+                _healPiece = false;
+                if (_targetSelection != null)
+                    HealPiece(_targetSelection);
+            }
+
 
         }
 
@@ -126,9 +165,38 @@ namespace SullysToolkit
         {
             IMoveablePiece moveablePiece = gamePiece.GetComponent<IMoveablePiece>();
 
-            if (moveablePiece!= null)
+            if (moveablePiece != null)
                 moveablePiece.MoveToNeighborCell((_xPosition, _yPosition));
         }
+
+        private void SetGamePieceMaxHealth(GamePiece gamePiece)
+        {
+            IHealthManager pieceHealthRef = gamePiece.GetComponent<IHealthManager>();
+            if (pieceHealthRef != null)
+                pieceHealthRef.SetMaxHealth(_value);
+        }
+
+        private void SetCurrentGamePieceHealth(GamePiece gamePiece)
+        {
+            IHealthManager pieceHealthRef = gamePiece.GetComponent<IHealthManager>();
+            if (pieceHealthRef != null)
+                pieceHealthRef.SetCurrentHealth(_value);
+        }
+
+        private void DamagePiece(GamePiece gamepiece)
+        {
+            IDamageablePiece damageablePiece = gamepiece.GetComponent<IDamageablePiece>();
+            if (damageablePiece != null)
+                damageablePiece.RecieveDamage(_value);
+        }
+
+        private void HealPiece(GamePiece gamepiece)
+        {
+            IHealablePiece healablePiece = gamepiece.GetComponent<IHealablePiece>();
+            if (healablePiece != null)
+                healablePiece.ReceiveHeals(_value);
+        }
+
 
         //Getters, Setters, & Commands
         //...
