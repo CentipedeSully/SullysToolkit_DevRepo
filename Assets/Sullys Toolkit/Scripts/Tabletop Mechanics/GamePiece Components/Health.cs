@@ -6,13 +6,14 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class Health : MonoBehaviour, IHealthManager, IHealablePiece, IDamageablePiece
+    public class Health : MonoBehaviour, IHealthManager, IHealablePiece, IDamageablePiece, IRegenerateable
     {
 
         //Declarations
         [Header("Health Settings")]
         [SerializeField] private int _currentHealth = 1;
         [SerializeField] [Min(1)] private int _maxHealth = 1;
+        [SerializeField] [Min(0)] private int _regenAmount;
 
         [Header("References")]
         [SerializeField] private GamePiece _gamePieceReference;
@@ -87,6 +88,11 @@ namespace SullysToolkit
         public void KillThisInstance()
         {
             //...
+        }
+
+        public void RegenerateAttributes()
+        {
+            ReceiveHeals(_regenAmount);
         }
     }
 }

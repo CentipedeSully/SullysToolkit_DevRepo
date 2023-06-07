@@ -19,20 +19,6 @@ namespace SullysToolkit
         void SetMaxMovePoints(int value);
     }
 
-    public interface IInteractablePiece
-    {
-        GamePiece GetGamePiece();
-
-        void TriggerEventOnInteraction();
-    }
-
-    public interface IInterationPerformerPiece
-    {
-        GamePiece GetGamePiece();
-
-        void InteractWithPointOfInterest(IInteractablePiece gamePiece);
-    }
-
     public interface IDamageablePiece
     {
         GamePiece GetGamePiece();
@@ -118,5 +104,25 @@ namespace SullysToolkit
     public interface IConflictLogger
     {
         void LogConflict(int attackerAtkScore, int attackerDmgScore, int attackerDef, int defenderAtkScore, int defenderDmgScore, int defenderDef);
+    }
+
+    public interface IRegenerateable
+    {
+        void RegenerateAttributes();
+    }
+
+    //Currently Work in Progress unused
+    public interface IInteractablePiece
+    {
+        GamePiece GetGamePiece();
+
+        void TriggerEventOnInteraction();
+    }
+
+    public interface IInterationPerformerPiece
+    {
+        GamePiece GetGamePiece();
+
+        void InteractWithPointOfInterest(IInteractablePiece gamePiece);
     }
 }

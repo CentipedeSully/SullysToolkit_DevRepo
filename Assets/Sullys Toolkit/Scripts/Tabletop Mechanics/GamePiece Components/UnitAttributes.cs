@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class UnitAttributes : MonoBehaviour, IAttributes
+    public class UnitAttributes : MonoBehaviour, IAttributes, IRegenerateable
     {
         //Declarations
         [SerializeField] private int _currentActionPoints = 1;
@@ -68,6 +68,11 @@ namespace SullysToolkit
             return _maxActionPoints;
         }
 
+        public void RegenerateAttributes()
+        {
+            SetCurrentActionPoints(_maxActionPoints);
+        }
+
         public void SetAtkDie(int value)
         {
             _atkDie = Mathf.Max(value, 1);
@@ -80,7 +85,7 @@ namespace SullysToolkit
 
         public void SetCurrentActionPoints(int value)
         {
-            _currentActionPoints = Mathf.Max(0, value);
+            _currentActionPoints = Mathf.Clamp(value,0,_maxActionPoints);
         }
 
         public void SetDamageDie(int value)
@@ -101,6 +106,7 @@ namespace SullysToolkit
         public void SetMaxActionPoints(int value)
         {
             _maxActionPoints = Mathf.Max(0, value);
+            SetCurrentActionPoints(_currentActionPoints);
         }
     }
 }

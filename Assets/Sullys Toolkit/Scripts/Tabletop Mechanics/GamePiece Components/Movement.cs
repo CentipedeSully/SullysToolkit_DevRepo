@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class Movement : MonoBehaviour, IMoveablePiece
+    public class Movement : MonoBehaviour, IMoveablePiece, IRegenerateable
     {
         //Declarations
         [Header("Movement Attributes")]
@@ -171,8 +171,10 @@ namespace SullysToolkit
 
         }
 
-
-
+        public void RegenerateAttributes()
+        {
+            SetCurrentMovePoints(_maxMovePoints);
+        }
     }
 
 

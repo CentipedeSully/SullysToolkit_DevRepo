@@ -24,6 +24,9 @@ namespace SullysToolkit
 
         private GridSystem<bool> _boardGrid;
 
+        [Header("TurnSystem Settings")]
+        [SerializeField] private TurnSystem _turnSystem;
+
         [Header("Debug Settings")]
         [SerializeField] private bool _isDebugActive;
 
@@ -58,7 +61,27 @@ namespace SullysToolkit
             gamePiece.transform.SetParent(this.transform);
         }
 
+        private void SubscribePieceToTurnSystem(GamePiece gamePiece)
+        {
+            if (_turnSystem != null)
+            {
+                ITurnListener turnListener = gamePiece.GetComponent<ITurnListener>();
+                if (turnListener != null)
+                    _turnSystem.AddTurnListener(turnListener);
+            }
+            
+        }
 
+        private void UnsubscribePieceFromTurnSystem(GamePiece gamePiece)
+        {
+            if (_turnSystem != null)
+            {
+                ITurnListener turnListener = gamePiece.GetComponent<ITurnListener>();
+                if (turnListener != null)
+                    _turnSystem.RemoveTurnListener(turnListener);
+            }
+            
+        }
 
         //Getters, Setters, & Commands
         public GridSystem<bool> GetGrid()
@@ -124,11 +147,13 @@ namespace SullysToolkit
                 newGamePiece.SetGameBoard(this);
                 newGamePiece.SetBoardLayer(deseiredLayer);
                 newGamePiece.MoveIntoPlay(xyDesiredPosition);
+                SubscribePieceToTurnSystem(newGamePiece);
 
                 if (newGamePiece.gameObject.activeSelf == false)
                     newGamePiece.gameObject.SetActive(true);
 
                 _gamePiecesInPlay.Add(newGamePiece);
+                
             }
             else
                 LogStatement($"Cannot add {newGamePiece.gameObject.name} to position ({xyDesiredPosition.Item1},{xyDesiredPosition.Item2})");
@@ -141,6 +166,7 @@ namespace SullysToolkit
             {
                 _gamePiecesInPlay.Remove(gamePiece);
                 gamePiece.RemoveFromPlay();
+                UnsubscribePieceFromTurnSystem(gamePiece);
                 LogStatement($"{ gamePiece.gameObject.name} removal successful");
             }
             else

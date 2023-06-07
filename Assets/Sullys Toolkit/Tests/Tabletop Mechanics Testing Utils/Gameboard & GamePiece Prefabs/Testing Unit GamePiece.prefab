@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 5694395770461013854}
   - component: {fileID: 8888976860028899714}
   - component: {fileID: 2781720362492586834}
+  - component: {fileID: 40773694001981532}
   m_Layer: 0
   m_Name: Testing Unit GamePiece
   m_TagString: Untagged
@@ -169,6 +170,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentHealth: 1
   _maxHealth: 1
+  _regenAmount: 0
   _gamePieceReference: {fileID: 0}
 --- !u!114 &8888976860028899714
 MonoBehaviour:
@@ -182,6 +184,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a6652bc208e3c4b80a32e5eda274ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _currentActionPoints: 1
+  _maxActionPoints: 1
   _atkDie: 20
   _atkModifier: 0
   _dmgDie: 2
@@ -217,5 +221,20 @@ MonoBehaviour:
   _damageModifierGrowthDieSize: 2
   _isHealthPresent: 0
   _isMovementBehaviorPresent: 0
-  _isConflictAttributesPresent: 0
+  _isAttributesPresent: 0
   _gamePieceReference: {fileID: 0}
+--- !u!114 &40773694001981532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5c24348247de0f4e98de63a94007e3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _turnSystem: {fileID: 0}
+  _regenPhase: 0
+  _readyToPassTurn: 0
