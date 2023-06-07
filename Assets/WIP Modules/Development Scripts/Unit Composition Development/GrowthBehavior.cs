@@ -16,27 +16,27 @@ namespace SullysToolkit
         [SerializeField] [Min(1)] private float _expGateGrowthMultiplier = 2;
 
         [Header("Growth modifiers")]
-        [SerializeField] private int _healthBase = 2;
-        [SerializeField] private int _healthDieSize = 4;
-        [SerializeField] private int _movePointBase = 30;
-        [SerializeField] private int _movePointDieSize = 12;
-        [SerializeField] private int _atkBase = 2;
-        [SerializeField] private int _atkGrowthDieSize = 4;
-        [SerializeField] private int _defBase = 2;
-        [SerializeField] private int _defGrowthDieSize = 4;
-        [SerializeField] private int _damageBase = 2; 
-        [SerializeField] private int _damageGrowthDieSize = 2;
+        [SerializeField] private int _maxHealthBase = 2;
+        [SerializeField] private int _healthGrowthDieSize = 4;
+        [SerializeField] private int _maxMovePointBase = 30;
+        [SerializeField] private int _movePointGrowthDieSize = 12;
+        [SerializeField] private int _atkModifierBase = 0;
+        [SerializeField] private int _atkGrowthDieSize = 2;
+        [SerializeField] private int _defBase = 10;
+        [SerializeField] private int _defGrowthDieSize = 2;
+        [SerializeField] private int _damageModifierBase = 0; 
+        [SerializeField] private int _damageModifierGrowthDieSize = 2;
 
         [Header("Growable Stats")]
         [SerializeField] private bool _isHealthPresent;
         [SerializeField] private bool _isMovementBehaviorPresent;
-        [SerializeField] private bool _isConflictAttributesPresent;
+        [SerializeField] private bool _isAttributesPresent;
 
         [Header("References")]
         [SerializeField] private GamePiece _gamePieceReference;
         [SerializeField] private IHealthManager _healthReference;
         [SerializeField] private IMoveablePiece _movementReference;
-        [SerializeField] private IConflictAttributes _conflictAttributesRef;
+        [SerializeField] private IAttributes _attributesRef;
 
 
 
@@ -59,14 +59,14 @@ namespace SullysToolkit
             _gamePieceReference = GetComponent<GamePiece>();
             _healthReference = GetComponent<IHealthManager>();
             _movementReference = GetComponent<IMoveablePiece>();
-            _conflictAttributesRef = GetComponent<IConflictAttributes>();
+            _attributesRef = GetComponent<IAttributes>();
 
             if (_healthReference != null)
                 _isHealthPresent = true;
             if (_movementReference != null)
                 _isMovementBehaviorPresent = true;
-            if (_conflictAttributesRef != null)
-                _isConflictAttributesPresent = true;
+            if (_attributesRef != null)
+                _isAttributesPresent = true;
 
         }
 
@@ -82,9 +82,9 @@ namespace SullysToolkit
         {
             if (_isHealthPresent)
             {
-                int maxHealth = _healthBase;
+                int maxHealth = _maxHealthBase;
                 if (_currentLv > 1)
-                    maxHealth += DieRoller.RollManyDice(_healthDieSize, _currentLv - 1);
+                    maxHealth += DieRoller.RollManyDice(_healthGrowthDieSize, _currentLv - 1);
 
                 _healthReference.SetMaxHealth(maxHealth);
                 _healthReference.SetCurrentHealth(maxHealth);
@@ -96,9 +96,9 @@ namespace SullysToolkit
         {
             if (_isMovementBehaviorPresent)
             {
-                int maxMovePoints = _movePointBase;
+                int maxMovePoints = _maxMovePointBase;
                 if (_currentLv > 1)
-                    maxMovePoints += DieRoller.RollManyDice(_movePointDieSize, _currentLv - 1);
+                    maxMovePoints += DieRoller.RollManyDice(_movePointGrowthDieSize, _currentLv - 1);
 
                 _movementReference.SetMaxMovePoints(maxMovePoints);
             }
@@ -106,22 +106,22 @@ namespace SullysToolkit
 
         private void InitializeConflictAttributes()
         {
-            if (_isConflictAttributesPresent)
+            if (_isAttributesPresent)
             {
-                int atk = _atkBase;
+                int atkModifier = _atkModifierBase;
                 int def = _defBase;
-                int damage = _damageBase;
+                int damageModifier = _damageModifierBase;
 
                 if (_currentLv > 1)
                 {
-                    atk += DieRoller.RollManyDice(_atkGrowthDieSize, _currentLv - 1);
+                    atkModifier += DieRoller.RollManyDice(_atkGrowthDieSize, _currentLv - 1);
                     def += DieRoller.RollManyDice(_defGrowthDieSize, _currentLv - 1);
-                    damage += DieRoller.RollManyDice(_damageGrowthDieSize, _currentLv - 1);
+                    damageModifier += DieRoller.RollManyDice(_damageModifierGrowthDieSize, _currentLv - 1);
                 }
 
-                _conflictAttributesRef.SetAtk(atk);
-                _conflictAttributesRef.SetDef(def);
-                _conflictAttributesRef.SetDamage(damage);
+                _attributesRef.SetAtkModifier(atkModifier);
+                _attributesRef.SetDef(def);
+                _attributesRef.SetDamageModifier(damageModifier);
             }
         }
 
@@ -130,7 +130,7 @@ namespace SullysToolkit
             if (_isHealthPresent)
             {
                 int maxHealth = _healthReference.GetMaxHealth();
-                maxHealth += DieRoller.RollDie(_healthDieSize);
+                maxHealth += DieRoller.RollDie(_healthGrowthDieSize);
                 _healthReference.SetMaxHealth(maxHealth);
                 _healthReference.SetCurrentHealth(maxHealth);
             }
@@ -141,34 +141,34 @@ namespace SullysToolkit
             if (_isMovementBehaviorPresent)
             {
                 int maxMovePoints = _movementReference.GetMaxMovePoints();
-                maxMovePoints += DieRoller.RollDie(_movePointDieSize);
+                maxMovePoints += DieRoller.RollDie(_movePointGrowthDieSize);
                 _movementReference.SetMaxMovePoints(maxMovePoints);
             }
         }
 
         private void IncrementConflictAttributes()
         {
-            if (_isConflictAttributesPresent)
+            if (_isAttributesPresent)
             {
-                int atk = _conflictAttributesRef.GetAtk();
-                int def = _conflictAttributesRef.GetDef();
-                int damage = _conflictAttributesRef.GetDamage();
+                int atk = _attributesRef.GetAtkModifier();
+                int def = _attributesRef.GetDef();
+                int damage = _attributesRef.GetDamageModifier();
 
                 atk += DieRoller.RollDie(_atkGrowthDieSize);
                 def += DieRoller.RollDie(_defGrowthDieSize);
-                damage += DieRoller.RollDie(_damageGrowthDieSize);
+                damage += DieRoller.RollDie(_damageModifierGrowthDieSize);
 
 
-                _conflictAttributesRef.SetAtk(atk);
-                _conflictAttributesRef.SetDef(def);
-                _conflictAttributesRef.SetDamage(damage);
+                _attributesRef.SetAtkModifier(atk);
+                _attributesRef.SetDef(def);
+                _attributesRef.SetDamageModifier(damage);
             }
         }
 
         private void RecalculateExpGate()
         {
             if (_currentLv < _maxLv)
-                _nextLvExpGate = (int)(_baseExpGate * (_currentLv - 1) * _expGateGrowthMultiplier);
+                _nextLvExpGate = (int)(_baseExpGate + _baseExpGate *(_currentLv - 1) * _expGateGrowthMultiplier);
         }
 
         private void CheckExpForLvUp()
@@ -177,11 +177,12 @@ namespace SullysToolkit
             {
                 if (_currentExp >= _nextLvExpGate)
                 {
-                    _currentExp = _currentExp % _nextLvExpGate;
-                    int lvUpsDetected = (int)(_currentExp / _nextLvExpGate);
-
-                    for (int i = 0; i < lvUpsDetected; i++)
+                    while (_currentExp >= _nextLvExpGate)
+                    {
+                        _currentExp -= _nextLvExpGate;
                         LvUp();
+                    }
+                    
                 }
             }
         }
@@ -209,6 +210,7 @@ namespace SullysToolkit
         public void SetCurrentLv(int value)
         {
             _currentLv = Mathf.Clamp(value, 1, _maxLv);
+            ClearExp();
             InitializeHealth();
             InitializeMovePoints();
             InitializeConflictAttributes();

@@ -83,6 +83,11 @@ namespace SullysToolkit
 
             OnDamaged?.Invoke(damageValue);
         }
+
+        public void KillThisInstance()
+        {
+            //...
+        }
     }
 }
 

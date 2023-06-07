@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class GameBoardAndGamePieceTester : MonoBehaviour
+    public class GameBoardAndGamePieceTester : MonoBehaviour, IConflictLogger
     {
         //Delcarations
         [Header("Command Settings")]
@@ -29,11 +29,31 @@ namespace SullysToolkit
         [SerializeField] private bool _moveSelectionInDirection;
 
         [Header("Health Management Commands")]
-        [SerializeField] private int _value;
+        [SerializeField] private int _healthModifer;
         [SerializeField] private bool _setCurrentHealth;
         [SerializeField] private bool _setMaxHealth;
         [SerializeField] private bool _damagePiece;
         [SerializeField] private bool _healPiece;
+
+        [Header("Growth Testing Commands")]
+        [SerializeField] private int _expModifier;
+        [SerializeField] private int _desiredLv;
+        [SerializeField] private bool _lvUpSelection;
+        [SerializeField] private bool _SetLvOnSelection;
+        [SerializeField] private bool _addExpToSelection;
+
+        [Header("Conflict Testint Commands")]
+        [SerializeField] private GamePiece _attacker;
+        [SerializeField] private GamePiece _defender;
+        [SerializeField] private int _loggedAttackerAtkRoll;
+        [SerializeField] private int _loggedAttackerDmgRoll;
+        [SerializeField] private int _loggedAttackerDef;
+        [SerializeField] private int _loggedDefenderAtkRoll;
+        [SerializeField] private int _loggedDefenderDmgRoll;
+        [SerializeField] private int _loggedDefenderDef;
+
+        [SerializeField] private bool _enterOneSidedConflict;
+        [SerializeField] private bool _enterTwoSidedConflict;
 
 
 
@@ -48,6 +68,11 @@ namespace SullysToolkit
 
 
         //Monobehaviours
+        private void Awake()
+        {
+            SetupConflictLogging();
+        }
+
         private void Update()
         {
             ListenForDebugCommands();
@@ -135,6 +160,40 @@ namespace SullysToolkit
                     HealPiece(_targetSelection);
             }
 
+            //Growth/Lvling Up
+            if (_addExpToSelection)
+            {
+                _addExpToSelection = false;
+                if (_targetSelection != null)
+                    AddExpToPiece(_targetSelection);
+            }
+
+            if (_lvUpSelection)
+            {
+                _lvUpSelection = false;
+                if (_targetSelection != null)
+                    LvUpPiece(_targetSelection);
+            }
+
+            if (_SetLvOnSelection)
+            {
+                _SetLvOnSelection = false;
+                if (_targetSelection != null)
+                    SetPieceLvToDesiredLv(_targetSelection);
+            }
+            
+            //Conflict Management
+            if (_enterOneSidedConflict)
+            {
+                _enterOneSidedConflict = false;
+                EnterOneSidedConflict(_attacker, _defender);
+            }
+
+            if (_enterTwoSidedConflict)
+            {
+                _enterTwoSidedConflict = false;
+                EnterTwoSidedConflict(_attacker, _defender);
+            }
 
         }
 
@@ -173,33 +232,82 @@ namespace SullysToolkit
         {
             IHealthManager pieceHealthRef = gamePiece.GetComponent<IHealthManager>();
             if (pieceHealthRef != null)
-                pieceHealthRef.SetMaxHealth(_value);
+                pieceHealthRef.SetMaxHealth(_healthModifer);
         }
 
         private void SetCurrentGamePieceHealth(GamePiece gamePiece)
         {
             IHealthManager pieceHealthRef = gamePiece.GetComponent<IHealthManager>();
             if (pieceHealthRef != null)
-                pieceHealthRef.SetCurrentHealth(_value);
+                pieceHealthRef.SetCurrentHealth(_healthModifer);
         }
 
         private void DamagePiece(GamePiece gamepiece)
         {
             IDamageablePiece damageablePiece = gamepiece.GetComponent<IDamageablePiece>();
             if (damageablePiece != null)
-                damageablePiece.RecieveDamage(_value);
+                damageablePiece.RecieveDamage(_healthModifer);
         }
 
         private void HealPiece(GamePiece gamepiece)
         {
             IHealablePiece healablePiece = gamepiece.GetComponent<IHealablePiece>();
             if (healablePiece != null)
-                healablePiece.ReceiveHeals(_value);
+                healablePiece.ReceiveHeals(_healthModifer);
+        }
+
+        private void LvUpPiece(GamePiece gamePiece)
+        {
+            ILevelablePiece _lvlableGamePiece = gamePiece.GetComponent<ILevelablePiece>();
+
+            if (_lvlableGamePiece != null)
+                _lvlableGamePiece.LvUp();
+        }
+
+        private void SetPieceLvToDesiredLv(GamePiece gamePiece)
+        {
+            ILevelablePiece _lvlableGamePiece = gamePiece.GetComponent<ILevelablePiece>();
+
+            if (_lvlableGamePiece != null)
+                _lvlableGamePiece.SetCurrentLv(_desiredLv);
+        }
+
+        private void AddExpToPiece(GamePiece gamePiece)
+        {
+            ILevelablePiece _lvlableGamePiece = gamePiece.GetComponent<ILevelablePiece>();
+
+            if (_lvlableGamePiece != null)
+                _lvlableGamePiece.GainExp(_expModifier);
+        }
+
+        private void SetupConflictLogging()
+        {
+            ConflictResolver.SetConflictLogger(this);
+        }
+
+        private void EnterOneSidedConflict(GamePiece attacker, GamePiece defender)
+        {
+            if (attacker != null && defender != null)
+                ConflictResolver.ResolveOneSidedConflict(attacker, defender);
+        }
+
+        private void EnterTwoSidedConflict(GamePiece attacker, GamePiece defender)
+        {
+            if (attacker != null && defender != null)
+                ConflictResolver.ResolveTwoSidedConflict(attacker, defender);
         }
 
 
         //Getters, Setters, & Commands
-        //...
+        public void LogConflict(int attackerAtkScore, int attackerDmgScore, int attackerDef, int defenderAtkScore, int defenderDmgScore, int defenderDef)
+        {
+            _loggedAttackerAtkRoll = attackerAtkScore;
+            _loggedAttackerDmgRoll = attackerDmgScore;
+            _loggedAttackerDef = attackerDef;
+            _loggedDefenderAtkRoll = defenderAtkScore;
+            _loggedDefenderDmgRoll = defenderDmgScore;
+            _loggedDefenderDef = defenderDef;
+        }
 
 
 

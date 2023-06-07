@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 6738688316492936325}
   - component: {fileID: 3682351698039565454}
   - component: {fileID: 5694395770461013854}
+  - component: {fileID: 8888976860028899714}
   - component: {fileID: 2781720362492586834}
   m_Layer: 0
   m_Name: Testing Unit GamePiece
@@ -169,6 +170,23 @@ MonoBehaviour:
   _currentHealth: 1
   _maxHealth: 1
   _gamePieceReference: {fileID: 0}
+--- !u!114 &8888976860028899714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a6652bc208e3c4b80a32e5eda274ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _atkDie: 20
+  _atkModifier: 0
+  _dmgDie: 2
+  _damageModifier: 0
+  _defence: 10
 --- !u!114 &2781720362492586834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,155 +200,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentLv: 1
-  _maxLv: 1
+  _maxLv: 5
   _currentExp: 0
-  _maxExpToLvlUp: 0
-  _expGrowthCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0.9999999
-      outSlope: 0.9999999
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.31883493
-      value: 0.3188349
-      inSlope: 0.99999994
-      outSlope: 0.99999994
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _healthGrowthCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 6
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 9
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 2
-      value: 12
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 3
-      value: 15
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 4
-      value: 18
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 5
-      value: 21
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 6
-      value: 24
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 7
-      value: 27
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 8
-      value: 30
-      inSlope: 3
-      outSlope: 3
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _atkGrowthCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _defGrowthCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _movePointsGrowthCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _actionPointsGrowthCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  _nextLvExpGate: 0
+  _baseExpGate: 10
+  _expGateGrowthMultiplier: 2
+  _maxHealthBase: 2
+  _healthGrowthDieSize: 4
+  _maxMovePointBase: 30
+  _movePointGrowthDieSize: 12
+  _atkModifierBase: 0
+  _atkGrowthDieSize: 2
+  _defBase: 10
+  _defGrowthDieSize: 2
+  _damageModifierBase: 0
+  _damageModifierGrowthDieSize: 2
   _isHealthPresent: 0
   _isMovementBehaviorPresent: 0
-  _isInteractionBehaviorPresent: 0
   _isConflictAttributesPresent: 0
   _gamePieceReference: {fileID: 0}

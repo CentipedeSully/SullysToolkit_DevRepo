@@ -56,6 +56,8 @@ namespace SullysToolkit
         int GetMaxHealth();
 
         void SetMaxHealth(int value);
+
+        void KillThisInstance();
     }
 
 
@@ -82,20 +84,39 @@ namespace SullysToolkit
         void ClearExp();
     }
 
-    public interface IConflictAttributes
+    public interface IAttributes
     {
-        int GetAtk();
+        int GetAtkDie();
 
-        void SetAtk(int value);
+        void SetAtkDie(int value);
+
+        int GetAtkModifier();
+
+        void SetAtkModifier(int value);
 
         int GetDef();
 
         void SetDef(int value);
 
-        int GetDamage();
+        int GetDamageModifier();
 
-        void SetDamage(int value);
+        void SetDamageModifier(int value);
+
+        int GetDamageDie();
+
+        void SetDamageDie(int value);
+
+        int GetCurrentActionPoints();
+
+        void SetCurrentActionPoints(int value);
+
+        int GetMaxActionPoints();
+
+        void SetMaxActionPoints(int value);
     }
 
-
+    public interface IConflictLogger
+    {
+        void LogConflict(int attackerAtkScore, int attackerDmgScore, int attackerDef, int defenderAtkScore, int defenderDmgScore, int defenderDef);
+    }
 }
