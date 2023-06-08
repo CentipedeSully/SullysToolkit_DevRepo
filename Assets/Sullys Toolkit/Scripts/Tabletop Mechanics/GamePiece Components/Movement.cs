@@ -24,8 +24,8 @@ namespace SullysToolkit
         //Events
         public delegate void MovementEvent();
         public event MovementEvent OnGamePieceMoved;
-        public event MovementEvent OnMovementEntered;
-        public event MovementEvent OnMovementExited;
+        //public event MovementEvent OnMovementEntered;
+        //public event MovementEvent OnMovementExited;
 
 
 

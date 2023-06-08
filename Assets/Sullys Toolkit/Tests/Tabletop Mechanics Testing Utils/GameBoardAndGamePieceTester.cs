@@ -42,7 +42,7 @@ namespace SullysToolkit
         [SerializeField] private bool _SetLvOnSelection;
         [SerializeField] private bool _addExpToSelection;
 
-        [Header("Conflict Testint Commands")]
+        [Header("Conflict Testing Commands")]
         [SerializeField] private GamePiece _attacker;
         [SerializeField] private GamePiece _defender;
         [SerializeField] private int _loggedAttackerAtkRoll;
@@ -55,7 +55,12 @@ namespace SullysToolkit
         [SerializeField] private bool _enterOneSidedConflict;
         [SerializeField] private bool _enterTwoSidedConflict;
 
-
+        [Header("Turn System Testing Commands")]
+        [SerializeField] private TurnSystem _turnSystem;
+        [SerializeField] private ManualTurnPhaseController _phaseController;
+        [SerializeField] private bool _startTurnSystem;
+        [SerializeField] private bool _stopTurnSystem;
+        [SerializeField] private bool _passTurn;
 
         [Header("References")]
         [SerializeField] private GameBoard _gameBoardReference;
@@ -73,6 +78,11 @@ namespace SullysToolkit
             SetupConflictLogging();
         }
 
+        private void Start()
+        {
+            InitializePhaseController();
+        }
+
         private void Update()
         {
             ListenForDebugCommands();
@@ -81,6 +91,12 @@ namespace SullysToolkit
 
 
         //Internal Utils
+        private void InitializePhaseController()
+        {
+            _phaseController = GetComponent<ManualTurnPhaseController>();
+            _phaseController?.SetTurnSystem(_turnSystem);
+        }
+
         private void ListenForDebugCommands()
         {
             //Adding/Removing
@@ -195,6 +211,30 @@ namespace SullysToolkit
                 EnterTwoSidedConflict(_attacker, _defender);
             }
 
+            //Turn System
+            if (_startTurnSystem)
+            {
+                _startTurnSystem = false;
+                if (_turnSystem != null)
+                    _turnSystem.StartTurnSystem();
+            }
+
+            if (_stopTurnSystem)
+            {
+                _stopTurnSystem = false;
+                if (_turnSystem != null)
+                    _turnSystem.StopTurnSystem();
+                
+            }
+
+            if (_passTurn)
+            {
+                _passTurn = false;
+                if (_phaseController != null)
+                    _phaseController.SetPassPhaseCommand(true);
+            }
+
+
         }
 
         private void CountGamePiecesOnSpecifiedPosition()
@@ -217,6 +257,14 @@ namespace SullysToolkit
         {
             GamePiece newPiece = Instantiate(prefab.gameObject, _bagOfHoldingReference).GetComponent<GamePiece>();
             newPiece.SetOutOfPlayHoldingLocation(_bagOfHoldingReference);
+
+            //Setup the turn regen utility on the gamepiece, if it has one
+            TurnRolloverRegenerator turnBasedRegenerator = newPiece.GetComponent<TurnRolloverRegenerator>();
+            if (turnBasedRegenerator != null)
+            {
+                turnBasedRegenerator.SetTurnBroadcaster(_turnSystem);
+                turnBasedRegenerator.InitializeReferences();
+            }
             return newPiece;
         }
 

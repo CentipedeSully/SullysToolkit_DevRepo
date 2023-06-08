@@ -33,6 +33,12 @@ public class TestTurnListener : ITurnListener
 
 
     //Interface Utils
+    public void ResetUtilsOnTurnSystemInterruption()
+    {
+        _taskTimer.CancelTimer();
+        ResetResponseFlag();
+    }
+
     public int GetResponsePhase()
     {
         return _responsePhase;
@@ -92,8 +98,6 @@ public class TestTurnListener : ITurnListener
         _isListenerTaskCompleted = true;
         Debug.Log($"{_ListenerName}, (phase{_responsePhase}) completed.");
     }
-
-
 }
 
 public class TurnSystemTester : MonoBehaviour

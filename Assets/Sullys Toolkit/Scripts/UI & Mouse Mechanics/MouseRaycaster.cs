@@ -94,6 +94,11 @@ namespace SullysToolkit
 
 
         //Getters, Setters, and Commands
+        public string GetRaycasterName()
+        {
+            return _RaycasterName;
+        }
+
         public ISelectionCache<GameObject> GetSelectionCache()
         {
             return _selectionCache;

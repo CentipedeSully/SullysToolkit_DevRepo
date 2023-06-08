@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class TurnSystemObjectRegenerator : MonoBehaviour, ITurnListener
+    public class TurnRolloverRegenerator : MonoBehaviour, ITurnListener
     {
         //Declarations
         [Header("Regeneration Timing Utils")]
@@ -13,25 +13,38 @@ namespace SullysToolkit
         [SerializeField] private TurnPhase _regenPhase;
         [SerializeField] private IRegenerateable[] _regenerateableReferences;
         [SerializeField] private bool _readyToPassTurn = false;
+        [SerializeField] private bool _isReferencesInitialized = false;
+
+        [Header("Debugging Utilities")]
+        [SerializeField] private bool _isDebugActive = false;
+
 
         //Monos
-        private void Awake()
-        {
-            InitializeReferences();
-        }
+
 
 
 
         //Internals
-        private void InitializeReferences()
+        public void InitializeReferences()
         {
-            _regenerateableReferences = GetComponents<IRegenerateable>();
-            _turnSystem.AddTurnListener(this);
+            if (_turnSystem != null)
+            {
+                _regenerateableReferences = GetComponents<IRegenerateable>();
+                _turnSystem.AddTurnListener(this);
+                _isReferencesInitialized = true;
+            }
+            else
+                STKDebugLogger.LogWarning($"Turn Rollover REgenerator {gameObject.name} Attempted to init references without it's turnSystem Being setup");
         }
 
 
 
         // Getters, Setters, && Commands
+        public bool IsDebugActive()
+        {
+            return _isDebugActive;
+        }
+
         public void TriggerRegenerationInChildReferences()
         {
             foreach (IRegenerateable reference in _regenerateableReferences)
@@ -40,6 +53,16 @@ namespace SullysToolkit
                     reference.RegenerateAttributes();
             }
                 
+        }
+
+        public bool IsReferencesInitialized()
+        {
+            return _isReferencesInitialized;
+        }
+
+        public void SetTurnBroadcaster(TurnSystem turnSystem)
+        {
+            _turnSystem = turnSystem;
         }
 
         public int GetResponsePhase()
@@ -70,7 +93,12 @@ namespace SullysToolkit
 
         public string GetConcreteListenerNameForDebugging()
         {
-            return gameObject.name;
+            return this.ToString();
+        }
+
+        public void ResetUtilsOnTurnSystemInterruption()
+        {
+            ResetResponseFlag();
         }
     }
 }

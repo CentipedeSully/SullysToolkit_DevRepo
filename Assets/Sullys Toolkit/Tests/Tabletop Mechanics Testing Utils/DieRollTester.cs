@@ -72,5 +72,8 @@ public class DieRollTester : MonoBehaviour
         }
     }
 
-    
+    public bool IsErrorFlagRaised()
+    {
+        return _errorFlag;
+    }
 }
