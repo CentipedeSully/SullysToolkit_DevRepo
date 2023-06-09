@@ -33,7 +33,7 @@ namespace SullysToolkit
         //Getters, Setters, & Commands
         public string GetConcreteListenerNameForDebugging()
         {
-            return this.ToString();
+            return this.ToString() + ", ID:" + GetInstanceID();
         }
 
         public int GetResponsePhase()

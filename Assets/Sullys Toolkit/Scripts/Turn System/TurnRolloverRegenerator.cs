@@ -93,7 +93,7 @@ namespace SullysToolkit
 
         public string GetConcreteListenerNameForDebugging()
         {
-            return this.ToString();
+            return this.ToString() + ", ID:" + GetInstanceID();
         }
 
         public void ResetUtilsOnTurnSystemInterruption()

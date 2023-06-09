@@ -123,53 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &539596146
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 539596147}
-  - component: {fileID: 539596148}
-  m_Layer: 0
-  m_Name: Turn System
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &539596147
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 539596146}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1870745019}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &539596148
+--- !u!114 &539596148 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 539596148, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
+  m_PrefabInstance: {fileID: 888326953}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 539596146}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0052c52015ee6674384f78e6524ca4d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _currentTurnCount: 0
-  _maxTurnCount: 0
-  _currentPhase: 0
 --- !u!1 &550508721
 GameObject:
   m_ObjectHideFlags: 3
@@ -263,6 +227,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &619343943 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5215204127688618932, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
+  m_PrefabInstance: {fileID: 888326953}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &619343945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619343943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8749a41570306cd4aa8838b40334df1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _turnSystem: {fileID: 0}
+  _turnPhase: 0
+  _passPhaseCommand: 0
+  _isMyPhaseNow: 0
+--- !u!114 &619343946 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8090354658530294405, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
+  m_PrefabInstance: {fileID: 888326953}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619343943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8749a41570306cd4aa8838b40334df1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &705507993
@@ -414,6 +410,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5215204127688618934, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
+      propertyPath: _turnSystem
+      value: 
+      objectReference: {fileID: 539596148}
+    - target: {fileID: 5215204127688618934, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
+      propertyPath: _mainPhaseController
+      value: 
+      objectReference: {fileID: 619343946}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
 --- !u!1 &890625690

@@ -57,7 +57,7 @@ namespace SullysToolkit
 
         [Header("Turn System Testing Commands")]
         [SerializeField] private TurnSystem _turnSystem;
-        [SerializeField] private ManualTurnPhaseController _phaseController;
+        [SerializeField] private ManualTurnPhaseController _mainPhaseController;
         [SerializeField] private bool _startTurnSystem;
         [SerializeField] private bool _stopTurnSystem;
         [SerializeField] private bool _passTurn;
@@ -80,7 +80,8 @@ namespace SullysToolkit
 
         private void Start()
         {
-            InitializePhaseController();
+            InitializeMainPhaseController();
+            InitializeOtherPhaseControllers();
         }
 
         private void Update()
@@ -91,10 +92,19 @@ namespace SullysToolkit
 
 
         //Internal Utils
-        private void InitializePhaseController()
+        private void InitializeMainPhaseController()
         {
-            _phaseController = GetComponent<ManualTurnPhaseController>();
-            _phaseController?.SetTurnSystem(_turnSystem);
+            _mainPhaseController = GetComponent<ManualTurnPhaseController>();
+            _mainPhaseController?.SetTurnSystem(_turnSystem);
+        }
+
+        private void InitializeOtherPhaseControllers()
+        {
+            foreach (ManualTurnPhaseController controller in GetComponents<ManualTurnPhaseController>())
+            {
+                if (controller.GetTurnBroadcaster() == null)
+                    controller.SetTurnSystem(_turnSystem);
+            }
         }
 
         private void ListenForDebugCommands()
@@ -230,8 +240,8 @@ namespace SullysToolkit
             if (_passTurn)
             {
                 _passTurn = false;
-                if (_phaseController != null)
-                    _phaseController.SetPassPhaseCommand(true);
+                if (_mainPhaseController != null)
+                    _mainPhaseController.SetPassPhaseCommand(true);
             }
 
 
