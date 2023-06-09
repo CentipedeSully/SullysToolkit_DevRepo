@@ -326,7 +326,7 @@ namespace SullysToolkit
             }
         }
 
-        private void IntegrateListenersAwaitingSubscriptionToCurrentPhase()
+        private void FulfillNewSubscribeRequestsForListenersAwaitingSubscriptionToCurrentPhase()
         {
             if (_currentPhaseListenerAdditionsBuffer.Count > 0)
             {
@@ -342,7 +342,7 @@ namespace SullysToolkit
             }
         }
 
-        private void RemoveListenersAwaitingRemoval()
+        private void FulfillNewRemoveRequestsForListenersAwaitingRemovalFromCurrentPhase()
         {
             if (_currentPhaseListenerRemovalsBuffer.Count > 0)
             {
@@ -377,6 +377,8 @@ namespace SullysToolkit
                 //Reset the turn back to the beginning phase
                 phaseCounter = 0;
 
+                STKDebugLogger.LogStatement(_isDebugActive, $"Entering Turn {_currentTurnCount}");
+
                 while (phaseCounter < numberOfPhases)
                 {
                     //Update the turnSystem's phase and then notify all relevant IListeners
@@ -389,11 +391,8 @@ namespace SullysToolkit
                     bool areAllListenersReady = false;
                     while (areAllListenersReady == false)
                     {
-                        //Take a moment to integrate any new 'add' request into the current phase before iteration
-                        IntegrateListenersAwaitingSubscriptionToCurrentPhase();
-
-                        //Take another moment to remove any new 'remove requests' from the current phase before iteration
-                        RemoveListenersAwaitingRemoval();
+                        FulfillNewSubscribeRequestsForListenersAwaitingSubscriptionToCurrentPhase();
+                        FulfillNewRemoveRequestsForListenersAwaitingRemovalFromCurrentPhase();
 
                         //now assume all are ready until one is verified to not be ready
                         areAllListenersReady = true;
@@ -406,7 +405,6 @@ namespace SullysToolkit
                                 areAllListenersReady = false;
                                 break;
                             }
-
                         }
 
                         //wait one frame before checking again

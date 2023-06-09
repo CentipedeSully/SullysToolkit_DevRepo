@@ -4,6 +4,14 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
+    public enum GamePieceType
+    {
+        Terrain,
+        PointOfInterest,
+        Unit
+    }
+
+
     public interface IMoveablePiece
     {
         GamePiece GetGamePiece();
@@ -45,7 +53,6 @@ namespace SullysToolkit
 
         void KillThisInstance();
     }
-
 
     public interface ILevelablePiece
     {
@@ -110,6 +117,42 @@ namespace SullysToolkit
     {
         void RegenerateAttributes();
     }
+
+    public interface IIdentityDefinition
+    {
+        GamePiece GetGamePiece();
+
+        GamePieceType GetType();
+
+        string GetName();
+
+        void SetName(string name);
+
+        string GetFaction();
+
+        void SetFaction(string faction);
+
+        bool IsHostile();
+
+        void SetHostility(bool value);
+
+    }
+
+    public interface IGamePieceController
+    {
+        GamePiece GetGamePiece();
+
+        void MoveInDirection((int,int) xyDirection);
+
+        void InteractWithCellInDirection((int, int) xyDirection);
+
+        void ToggleShowData(bool value);
+
+        bool IsShowDataToggled();
+        
+    }
+
+
 
     //Currently Work in Progress unused
     public interface IInteractablePiece
