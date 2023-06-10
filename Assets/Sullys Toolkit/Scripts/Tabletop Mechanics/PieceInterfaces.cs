@@ -138,6 +138,13 @@ namespace SullysToolkit
 
     }
 
+    public interface IExperienceProvider
+    {
+        int GetExpValue();
+
+        void SetExpValue(int value);
+    }
+
     public interface IGamePieceController
     {
         GamePiece GetGamePiece();

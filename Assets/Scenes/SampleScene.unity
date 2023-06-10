@@ -362,6 +362,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2021944920}
     m_Modifications:
+    - target: {fileID: 539596148, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
+      propertyPath: _isDebugActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5215204126479897628, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
       propertyPath: m_Name
       value: GameBoard & GamePiece Test Setting

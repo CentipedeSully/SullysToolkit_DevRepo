@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class UnitAttributes : MonoBehaviour, IAttributes, IRegenerateable
+    public class UnitAttributes : MonoBehaviour, IAttributes, IRegenerateable, IExperienceProvider
     {
         //Declarations
         [SerializeField] private int _currentActionPoints = 1;
@@ -16,19 +16,28 @@ namespace SullysToolkit
         [SerializeField] private int _damageModifier = 0;
         [SerializeField] private int _defence = 10;
 
+        [SerializeField] private bool _useCustomExpValue;
+        [SerializeField] private int _expValue = 0;
 
 
 
 
 
         //Monobehaviours
-
+       private void OnEnable()
+        {
+            UpdateExpValue();
+        }
 
 
 
 
         //Internal Utils
-
+        private void UpdateExpValue()
+        {
+            if (_useCustomExpValue == false)
+                _expValue = _defence + _damageModifier + _atkModifier + Mathf.FloorToInt(_dmgDie / 2) + _maxActionPoints;
+        }
 
 
 
@@ -63,6 +72,11 @@ namespace SullysToolkit
             return _defence;
         }
 
+        public int GetExpValue()
+        {
+            return _expValue;
+        }
+
         public int GetMaxActionPoints()
         {
             return _maxActionPoints;
@@ -81,6 +95,7 @@ namespace SullysToolkit
         public void SetAtkModifier(int value)
         {
             _atkModifier = value;
+            UpdateExpValue();
         }
 
         public void SetCurrentActionPoints(int value)
@@ -91,22 +106,31 @@ namespace SullysToolkit
         public void SetDamageDie(int value)
         {
             _dmgDie = Mathf.Max(1, value);
+            UpdateExpValue();
         }
 
         public void SetDamageModifier(int value)
         {
             _damageModifier = value;
+            UpdateExpValue();
         }
 
         public void SetDef(int value)
         {
             _defence = Mathf.Max(0, value);
+            UpdateExpValue();
+        }
+
+        public void SetExpValue(int value)
+        {
+            _expValue = Mathf.Max(value, 0);
         }
 
         public void SetMaxActionPoints(int value)
         {
             _maxActionPoints = Mathf.Max(0, value);
             SetCurrentActionPoints(_currentActionPoints);
+            UpdateExpValue();
         }
     }
 }
