@@ -7,7 +7,6 @@ namespace SullysToolkit
     public class Identity : MonoBehaviour, IIdentityDefinition
     {
         //Declarations
-        [SerializeField] private GamePieceType _type;
         [SerializeField] private string _name = "Unnamed Piece";
         [SerializeField] private string _faction = "Independent";
         [SerializeField] private bool _isHostile = false;
@@ -64,11 +63,6 @@ namespace SullysToolkit
         {
             if (newName != null)
                 _name = newName;
-        }
-
-        GamePieceType IIdentityDefinition.GetType()
-        {
-            return _type;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace SullysToolkit
         //Declarations
         [SerializeField] private List<GameObject> _selectionList;
         [SerializeField] private bool _isMultiSelectAvaialable = false;
-        [SerializeField] private bool _isDegubActive = false;
+        [SerializeField] private bool _isDebugActive = false;
 
 
 
@@ -53,10 +53,10 @@ namespace SullysToolkit
                     if (!_selectionList.Contains(newSelection))
                     {
                         _selectionList.Add(newSelection);
-                        if (_isDegubActive)
+                        if (_isDebugActive)
                             Debug.Log("Added new object to the 'selection' Collection");
                     }
-                    if (_isDegubActive)
+                    if (_isDebugActive)
                         Debug.Log("Object Already exists in collection");
                 }
                 else SetSelection(newSelection);
@@ -68,7 +68,7 @@ namespace SullysToolkit
         public void ClearSelection()
         {
             _selectionList = new List<GameObject>();
-            if (_isDegubActive)
+            if (_isDebugActive)
                 Debug.Log("Selection Collection Cleared");
         }
 
@@ -100,12 +100,12 @@ namespace SullysToolkit
                 if (_selectionList.Contains(existingSelection))
                 {
                     _selectionList.Remove(existingSelection);
-                    if (_isDegubActive)
+                    if (_isDebugActive)
                         Debug.Log("object removed from selection collection");
                 }
 
                 else
-                    if (_isDegubActive)
+                    if (_isDebugActive)
                     Debug.Log("requested object doesn't exist in selection collection. Ignoring remove command");
             }
 
@@ -118,7 +118,7 @@ namespace SullysToolkit
                 _selectionList = new List<GameObject>();
                 _selectionList.Add(newSelection);
 
-                if (_isDegubActive)
+                if (_isDebugActive)
                     Debug.Log("selection overridden successfully");
             }
         }
@@ -134,12 +134,12 @@ namespace SullysToolkit
         //Getters, Setters, & Commands
         public bool IsDebugActive()
         {
-            return _isDegubActive;
+            return _isDebugActive;
         }
 
         public void SetDebugMode(bool newValue)
         {
-            _isDegubActive = newValue;
+            _isDebugActive = newValue;
         }
 
 

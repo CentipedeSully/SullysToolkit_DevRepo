@@ -66,7 +66,7 @@ namespace SullysToolkit
         private RaycastHit2D CastRayFromMouse()
         {
             Vector2 castOrigin = _mouseToWorld2DReference.GetWorldPosition();
-            return Physics2D.Raycast(castOrigin, _castDirection);
+            return Physics2D.Raycast(castOrigin, _castDirection,_raycastDistance,_selectableLayers);
         }
 
         private void SetSelectionViaRaycast()

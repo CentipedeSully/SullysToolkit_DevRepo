@@ -122,8 +122,6 @@ namespace SullysToolkit
     {
         GamePiece GetGamePiece();
 
-        GamePieceType GetType();
-
         string GetName();
 
         void SetName(string name);
@@ -145,29 +143,15 @@ namespace SullysToolkit
         void SetExpValue(int value);
     }
 
-    public interface IGamePieceController
-    {
-        GamePiece GetGamePiece();
-
-        void MoveInDirection((int,int) xyDirection);
-
-        void InteractWithCellInDirection((int, int) xyDirection);
-
-        void ToggleShowData(bool value);
-
-        bool IsShowDataToggled();
-        
-    }
-
-
-
-    //Currently Work in Progress unused
     public interface IInteractablePiece
     {
         GamePiece GetGamePiece();
 
-        void TriggerEventOnInteraction();
+        void TriggerInteractionEvent(GamePiece performer);
     }
+
+    //Currently Work in Progress unused
+
 
     public interface IInterationPerformerPiece
     {

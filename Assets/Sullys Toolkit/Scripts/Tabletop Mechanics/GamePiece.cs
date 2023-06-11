@@ -9,6 +9,7 @@ namespace SullysToolkit
     {
         //Declarations
         [Header("Play Data")]
+        [SerializeField] private GamePieceType _typeOfGamepiece;
         [SerializeField] private bool _isInPlay;
         [SerializeField] private (int, int) _currentGridPosition = (-1, -1);
 
@@ -65,6 +66,11 @@ namespace SullysToolkit
         {
             if (newBoard != null)
                 _gameBoard = newBoard;
+        }
+
+        public GamePieceType GetGamePieceType()
+        {
+            return _typeOfGamepiece;
         }
 
         public void ClearGamePieceBoardData()

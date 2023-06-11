@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1817485039024057308}
   - component: {fileID: 7578835751465150860}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,9 @@ GameObject:
   - component: {fileID: 8888976860028899714}
   - component: {fileID: 2781720362492586834}
   - component: {fileID: 40773694001981532}
-  m_Layer: 0
+  - component: {fileID: 1302578420850254524}
+  - component: {fileID: 1468653217617663077}
+  m_Layer: 7
   m_Name: Testing Unit GamePiece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,6 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81ee2eda333b4ee40a01f3b8a5d0d305, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _typeOfGamepiece: 2
   _isInPlay: 0
   _bagOfHolding: {fileID: 0}
   _gameBoard: {fileID: 0}
@@ -151,7 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b201e4a148559564a9f2063e8741d73b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _type: 2
   _name: Unnamed Piece
   _faction: Independent
   _isHostile: 0
@@ -208,6 +210,8 @@ MonoBehaviour:
   _dmgDie: 2
   _damageModifier: 0
   _defence: 10
+  _useCustomExpValue: 0
+  _expValue: 0
 --- !u!114 &2781720362492586834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,3 +261,45 @@ MonoBehaviour:
   _readyToPassTurn: 0
   _isReferencesInitialized: 0
   _isDebugActive: 0
+--- !u!114 &1302578420850254524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a3a22c1fd30314ba5fc3a36e6a3a07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyFactions:
+  - Independent
+  _gamePieceRef: {fileID: 0}
+  _isDebugActive: 1
+--- !u!61 &1468653217617663077
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0

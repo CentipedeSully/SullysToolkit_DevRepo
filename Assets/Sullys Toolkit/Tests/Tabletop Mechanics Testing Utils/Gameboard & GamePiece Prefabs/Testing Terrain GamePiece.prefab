@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2766959388232971542}
   - component: {fileID: 3901354930996184800}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6825944910069880769}
   - component: {fileID: 6738688316492936325}
-  m_Layer: 0
+  - component: {fileID: 1585445850449636554}
+  m_Layer: 9
   m_Name: Testing Terrain GamePiece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +130,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81ee2eda333b4ee40a01f3b8a5d0d305, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _typeOfGamepiece: 0
   _isInPlay: 0
   _bagOfHolding: {fileID: 0}
   _gameBoard: {fileID: 0}
   _boardLayer: 3
+--- !u!61 &1585445850449636554
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
