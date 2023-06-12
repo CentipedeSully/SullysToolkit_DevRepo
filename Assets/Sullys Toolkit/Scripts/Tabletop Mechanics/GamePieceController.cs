@@ -40,12 +40,17 @@ namespace SullysToolkit
         //Monobehaviours
         private void Start()
         {
-            _mouseRaycasterTool.SetSelectionCache(this);
-            ChangeSelectionFilterToDetectUnits();
+            SetupRaycasterOnStart();
         }
 
 
         //Internal Utils
+        private void SetupRaycasterOnStart()
+        {
+            _mouseRaycasterTool.SetSelectionCache(this);
+            ChangeSelectionFilterToDetectUnits();
+        }
+
         private bool IsSelectedTerrainAdjacentToSelectedGamePiece()
         {
             STKDebugLogger.LogStatement(_isDebugActive, $"Checking if Selected Terrain and Selected Gamepiece are adjacent");
@@ -71,15 +76,19 @@ namespace SullysToolkit
             
         }
 
-        private void InteractWithGamePiece(GamePiece gamePiece)
+        private void MakeSelectedGamePieceInteractWithOtherGamePiece(GamePiece otherGamePiece)
         {
-            IInteractablePiece interactablePiece = gamePiece.GetComponent<IInteractablePiece>();
+            IInteractablePiece interactablePiece = otherGamePiece.GetComponent<IInteractablePiece>();
 
-            if (interactablePiece != null && interactablePiece.GetGamePiece() != _selectedGamePiece)
-                interactablePiece.TriggerInteractionEvent(_selectedGamePiece);
+            if (interactablePiece != null && _selectedGamePiece != null)
+            {
+                if (interactablePiece.GetGamePiece() != _selectedGamePiece)
+                    interactablePiece.TriggerInteractionEvent(_selectedGamePiece);
+            }
+                
         }
 
-        private void MoveSelectedPieceToSelectedTerrain()
+        private void MoveSelectedPieceToSelectedAdjacentTerrain()
         {
             //Get movedata
             IMoveablePiece moveablePiece = _selectedGamePiece?.GetComponent<IMoveablePiece>();
@@ -88,7 +97,18 @@ namespace SullysToolkit
 
             //Validate TerrainPositioning
             if (moveablePiece != null && _selectedTerrainPosition != null)
-                moveablePiece.MoveToNeighborCell(_selectedTerrainPosition.GetGridPosition());
+            {
+                if (IsSelectedTerrainAdjacentToSelectedGamePiece())
+                {
+                    int xDirection = _selectedTerrainPosition.GetGridPosition().Item1 - _selectedGamePiece.GetGridPosition().Item1;
+                    int yDirection = _selectedTerrainPosition.GetGridPosition().Item2 - _selectedGamePiece.GetGridPosition().Item2;
+                    moveablePiece.MoveToNeighborCell((xDirection,yDirection));
+                }
+                    
+                else
+                    STKDebugLogger.LogStatement(_isDebugActive, $"selected terrain and gamePiece not adjacent. Ignoring Move Command");
+            }
+                
             else
                 STKDebugLogger.LogStatement(_isDebugActive, $"Move Aborted due to null selection.");
         }
@@ -103,6 +123,33 @@ namespace SullysToolkit
         {
             _isSelectorReady = true;
         }
+
+        private GamePiece GetUnitOnSelectedTerrain()
+        {
+            int xPosition = _selectedTerrainPosition.GetGridPosition().Item1;
+            int yPosition = _selectedTerrainPosition.GetGridPosition().Item2;
+            List<GamePiece> gamePiecesOnSelectedPosition = _gameBoard.GetPiecesOnPosition((xPosition, yPosition));
+            STKDebugLogger.LogStatement(_isDebugActive, $"Checking Selected Terrain ({xPosition},{yPosition}) for Occupancy...");
+
+            IEnumerable<GamePiece> unitOnPosition =
+                from piece in gamePiecesOnSelectedPosition
+                where piece.GetGamePieceType() == GamePieceType.Unit
+                select piece;
+
+            if (unitOnPosition.Any())
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"Found a Unit at position ({xPosition},{yPosition}): {unitOnPosition.First()}");
+                return unitOnPosition.First();
+            }
+            else
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"No Unit found on position ({xPosition},{yPosition})");
+                return null;
+            }
+
+        }
+
+
 
 
         //Getters, Setters, & Commands
@@ -175,6 +222,9 @@ namespace SullysToolkit
                 _isTargetingOnlyUnits = false;
         }
 
+
+
+        /*
         public void InteractWithNeighborOrMoveToNeighbor((int, int) xyDirection)
         {
             if (_gameBoard != null && _selectedGamePiece != null)
@@ -207,22 +257,22 @@ namespace SullysToolkit
                     if (unitOnPosition.Any())
                     {
                         STKDebugLogger.LogStatement(_isDebugActive, $"Found a Unit to Interact With: {unitOnPosition.First()}");
-                        InteractWithGamePiece(unitOnPosition.First());
+                        MakeSelectedGamePieceInteractWithOtherGamePiece(unitOnPosition.First());
                     }
                         
 
                     else if (pointOfInterestOnPosition.Any())
                     {
                         STKDebugLogger.LogStatement(_isDebugActive, $"Found a Point Of Interest to interact with: {pointOfInterestOnPosition.First()}");
-                        InteractWithGamePiece(pointOfInterestOnPosition.First());
+                        MoveSelectedPieceToSelectedAdjacentTerrain();
+                        MakeSelectedGamePieceInteractWithOtherGamePiece(pointOfInterestOnPosition.First());
                     }
                         
 
                     else if (terrainOnPosition.Any())
                     {
                         STKDebugLogger.LogStatement(_isDebugActive, $"Found only Terrain here: {terrainOnPosition.First()}");
-                        //InteractWithGamePiece(terrainOnPosition.First());
-                        MoveSelectedPieceToSelectedTerrain();
+                        MoveSelectedPieceToSelectedAdjacentTerrain();
                     }
                         
                 }
@@ -230,7 +280,7 @@ namespace SullysToolkit
                     STKDebugLogger.LogStatement(_isDebugActive, $"Aborting Interaction. Cell {xTargetCell},{yTargetCell} isn't On the grid");
             }
         }
-
+        */
 
 
         public GameObject GetSelection()
@@ -242,7 +292,6 @@ namespace SullysToolkit
         {
             if (_isSelectorReady)
             {
-                CooldownSelection();
                 if (newSelection != null)
                 {
                     GamePiece gamePiece = newSelection.GetComponent<GamePiece>();
@@ -251,23 +300,39 @@ namespace SullysToolkit
                     {
                         if (gamePiece.GetGamePieceType() == GamePieceType.Unit)
                         {
+                            STKDebugLogger.LogStatement(_isDebugActive,$"First Selection Made (Unit): {gamePiece}");
                             _selectedGamePiece = gamePiece;
                             ChangeSelectionFilterToDetectTerrain();
+                            CooldownSelection();
                         }
 
                         //this can only happen if we've already selected a unit. The selection filter changes when a unit is selected,
                         //which makes selecting a unit a second time impossible.
-                        else if (gamePiece.GetGamePieceType() == GamePieceType.Terrain && _isTargetingOnlyTerrain == true)
+                        else if (gamePiece.GetGamePieceType() == GamePieceType.Terrain)
                         {
+                            STKDebugLogger.LogStatement(_isDebugActive, $"Second Selection Made (Terrain): {gamePiece}");
                             _selectedTerrainPosition = gamePiece;
 
-                            InteractWithNeighborOrMoveToNeighbor(gamePiece.GetGridPosition());
+                            if (IsSelectedTerrainAdjacentToSelectedGamePiece())
+                            {
+                                GamePiece foundUnit = GetUnitOnSelectedTerrain();
+
+                                if (foundUnit != null && foundUnit != _selectedGamePiece)
+                                    MakeSelectedGamePieceInteractWithOtherGamePiece(foundUnit);
+
+                                else if (foundUnit == null)
+                                    MoveSelectedPieceToSelectedAdjacentTerrain();
+                            }
+
+                            STKDebugLogger.LogStatement(_isDebugActive, $"Command Execution Completed. Selector Reset");
                             ClearSelection();
                             ChangeSelectionFilterToDetectUnits();
+                            CooldownSelection();
                         }
 
                         else
                         {
+                            STKDebugLogger.LogStatement(_isDebugActive, $"Selection Miss Detected. Selector Reset");
                             ClearSelection();
                             ChangeSelectionFilterToDetectUnits();
                         }
@@ -275,13 +340,16 @@ namespace SullysToolkit
                 }
                 else
                 {
+                    STKDebugLogger.LogStatement(_isDebugActive, $"Selected gameObject has no GamePiece Component. Selector Reset");
                     ClearSelection();
                     ChangeSelectionFilterToDetectUnits();
                 }
             }
-            
-                
-            
+
+            //STKDebugLogger.LogStatement(_isDebugActive, $"Selector Still Cooling down to avoid undesired multiclicking. Please Wait...");
+
+
+
         }
 
         public List<GameObject> GetSelectionCollection()

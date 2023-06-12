@@ -18,6 +18,7 @@ namespace SullysToolkit
 
 
         [Header("Add/Remove Testing Commands")]
+        [SerializeField] private bool _poplateMapWithTerrain;
         [SerializeField] private bool _addNewUnitToBoard;
         [SerializeField] private bool _addNewTerrainToBoard;
         [SerializeField] private bool _addNewPOIToBoard;
@@ -107,9 +108,20 @@ namespace SullysToolkit
             }
         }
 
+        private void PopulateMapWithTerrain()
+        {
+
+        }
+
         private void ListenForDebugCommands()
         {
             //Adding/Removing
+            if (_poplateMapWithTerrain)
+            {
+                _poplateMapWithTerrain = false;
+                FillBoardWithTerrain(_terrainPiecePrefab);
+            }
+
             if (_addNewUnitToBoard)
             {
                 _addNewUnitToBoard = false;
@@ -256,6 +268,19 @@ namespace SullysToolkit
         {
             (int, int) xyPosition = (_xPosition, _yPosition);
             _gameBoardReference.AddGamePiece(gamePiece, gamePiece.GetBoardLayer(), xyPosition);
+        }
+
+        private void FillBoardWithTerrain(GamePiece terrainPiece)
+        {
+            for (int x = 0; x < _gameBoardReference.GetColumnCount(); x++)
+            {
+                for (int y = 0; y < _gameBoardReference.GetRowCount();y++)
+                {
+                    GamePiece newPiece = CreateNewGamePiece(_terrainPiecePrefab);
+                    _gameBoardReference.AddGamePiece(newPiece, newPiece.GetBoardLayer(), (x, y));
+                }
+                    
+            }
         }
 
         private void RemoveGamePieceFromGameBoard(GamePiece gamePiece)
