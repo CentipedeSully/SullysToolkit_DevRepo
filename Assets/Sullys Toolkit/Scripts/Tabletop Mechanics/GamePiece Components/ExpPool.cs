@@ -35,15 +35,33 @@ namespace SullysToolkit
 
         private void GrantExpToPerformerAndTriggerEvent(ILevelablePiece gamePiece)
         {
-            if (gamePiece != null)
+            if (gamePiece == null)
             {
-                STKDebugLogger.LogStatement(_isDebugActive,$"Granting {_expValue}(XP) to {gamePiece}");
+                STKDebugLogger.LogStatement(_isDebugActive,$"Performer {gamePiece} of ExpPool Interaction is null. Ignoring interaction");
+                return;
+            }
+
+
+            IAttributes gPieceAtrtibutes = gamePiece.GetGamePiece().GetComponent<IAttributes>();
+            if (gPieceAtrtibutes == null)
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"Performer {gamePiece} of ExpPool Interaction has No Attributes. Ignoring interaction");
+                return;
+            }
+
+
+            if (gPieceAtrtibutes.GetCurrentActionPoints() > 1)
+            {
+                //Deduct AP
+                gPieceAtrtibutes.SetCurrentActionPoints(gPieceAtrtibutes.GetCurrentActionPoints() - 1);
+
+                STKDebugLogger.LogStatement(_isDebugActive,$"Granting {_expValue}(XP) to {gamePiece} and Deducting Ap");
                 _isPoolAvailable = false;
                 gamePiece.GainExp(_expValue);
                 OnEventTriggered?.Invoke(_gamePieceRef, gamePiece.GetGamePiece());
             }
             else
-                STKDebugLogger.LogStatement(_isDebugActive, $"{gamePiece} has no ILevelable interface. Ignoring ExpGrant Command");
+                STKDebugLogger.LogStatement(_isDebugActive, $"{gamePiece} has no Ap for this interaction. Ignoring Interaction");
 
         }
 
@@ -56,7 +74,7 @@ namespace SullysToolkit
 
         public void TriggerInteractionEvent(GamePiece performer)
         {
-            ILevelablePiece levelableGamePiece = performer.GetComponent<ILevelablePiece>();
+            ILevelablePiece levelableGamePiece = performer?.GetComponent<ILevelablePiece>();
             GrantExpToPerformerAndTriggerEvent(levelableGamePiece);
         }
 

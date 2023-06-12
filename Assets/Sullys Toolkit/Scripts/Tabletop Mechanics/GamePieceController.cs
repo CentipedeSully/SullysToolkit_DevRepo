@@ -113,6 +113,14 @@ namespace SullysToolkit
                 STKDebugLogger.LogStatement(_isDebugActive, $"Move Aborted due to null selection.");
         }
 
+        private void MakeSelectedPieceInteractWithItsCurrentPosition()
+        {
+            if (_selectedGamePiece != null)
+            {
+
+            }
+        }
+
         private void CooldownSelection()
         {
             _isSelectorReady = false;
