@@ -19,6 +19,9 @@ namespace SullysToolkit
         [SerializeField] private bool _useCustomExpValue;
         [SerializeField] private int _expValue = 0;
 
+        //Events
+        public delegate void AttributeEvent();
+        public event AttributeEvent OnAttributeChanged;
 
 
 
@@ -39,7 +42,10 @@ namespace SullysToolkit
                 _expValue = _defence + _damageModifier + _atkModifier + Mathf.FloorToInt(_dmgDie / 2) + _maxActionPoints;
         }
 
-
+        private void TriggerAttributeChangedEvent()
+        {
+            OnAttributeChanged?.Invoke();
+        }
 
         //Getters, Setters, & Commands
         public int GetAtkDie()
@@ -85,28 +91,33 @@ namespace SullysToolkit
         public void RegenerateAttributes()
         {
             SetCurrentActionPoints(_maxActionPoints);
+            TriggerAttributeChangedEvent();
         }
 
         public void SetAtkDie(int value)
         {
             _atkDie = Mathf.Max(value, 1);
+            TriggerAttributeChangedEvent();
         }
 
         public void SetAtkModifier(int value)
         {
             _atkModifier = value;
             UpdateExpValue();
+            TriggerAttributeChangedEvent();
         }
 
         public void SetCurrentActionPoints(int value)
         {
             _currentActionPoints = Mathf.Clamp(value,0,_maxActionPoints);
+            TriggerAttributeChangedEvent();
         }
 
         public void SetDamageDie(int value)
         {
             _dmgDie = Mathf.Max(1, value);
             UpdateExpValue();
+            TriggerAttributeChangedEvent();
         }
 
         public void SetDamageModifier(int value)
@@ -119,6 +130,7 @@ namespace SullysToolkit
         {
             _defence = Mathf.Max(0, value);
             UpdateExpValue();
+            TriggerAttributeChangedEvent();
         }
 
         public void SetExpValue(int value)
@@ -131,6 +143,7 @@ namespace SullysToolkit
             _maxActionPoints = Mathf.Max(0, value);
             SetCurrentActionPoints(_currentActionPoints);
             UpdateExpValue();
+            TriggerAttributeChangedEvent();
         }
     }
 }

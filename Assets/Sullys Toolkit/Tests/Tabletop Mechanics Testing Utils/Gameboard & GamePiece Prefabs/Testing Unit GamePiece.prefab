@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 40773694001981532}
   - component: {fileID: 1302578420850254524}
   - component: {fileID: 1468653217617663077}
+  - component: {fileID: 7716430207320865611}
   m_Layer: 7
   m_Name: Testing Unit GamePiece
   m_TagString: Untagged
@@ -157,6 +158,7 @@ MonoBehaviour:
   _name: Unnamed Piece
   _faction: Independent
   _isHostile: 0
+  _pieceDescription: A unit that's ready for action
 --- !u!114 &3682351698039565454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,3 +305,21 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &7716430207320865611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bc8822e4d10c3b4091f3c9ea05b7ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _displayType: 2
+  _displayObject: {fileID: 0}
+  _hideDisplayOnStart: 1
+  _isDebugActive: 0
+  _updateDataCmd: 0
+  _gamePieceRef: {fileID: 0}

@@ -134,6 +134,10 @@ namespace SullysToolkit
 
         void SetHostility(bool value);
 
+        string GetDescription();
+
+        void SetDescription(string newDescription);
+
     }
 
     public interface IExperienceProvider
@@ -153,10 +157,20 @@ namespace SullysToolkit
     //Currently Work in Progress unused
 
 
-    public interface IInterationPerformerPiece
+    public interface IUIDisplayController
     {
-        GamePiece GetGamePiece();
+        GameObject GetDisplayObject();
 
-        void InteractWithPointOfInterest(IInteractablePiece gamePiece);
+        void SetDisplayObject(GameObject newDisplay);
+
+        void DisplayData();
+
+        void HideData();
+
+        void UpdateData();
+
+        bool IsDataOnDisplay();
+
+        void SetupDisplayOnStart();
     }
 }

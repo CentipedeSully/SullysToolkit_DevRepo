@@ -116,8 +116,14 @@ namespace SullysToolkit
         private void MakeSelectedPieceInteractWithItsCurrentPosition()
         {
             if (_selectedGamePiece != null)
-            {
+            { 
+                List<GamePiece> piecesOnCurrentPosition = _gameBoard.GetPiecesOnPosition(_selectedGamePiece.GetGridPosition());
+                IEnumerable<GamePiece> pointOfInterestQuery =
+                    from piece in piecesOnCurrentPosition
+                    where piece.GetGamePieceType() == GamePieceType.PointOfInterest
+                    select piece;
 
+                MakeSelectedGamePieceInteractWithOtherGamePiece(pointOfInterestQuery.First());
             }
         }
 
@@ -157,7 +163,21 @@ namespace SullysToolkit
 
         }
 
+        private void DisplaySelectedGamePieceData()
+        {
+            IUIDisplayController displayController = _selectedGamePiece?.GetComponent<IUIDisplayController>();
 
+            if (displayController != null)
+                displayController.DisplayData();
+        }
+
+        private void HideSelectedGamePieceData()
+        {
+            IUIDisplayController displayController = _selectedGamePiece?.GetComponent<IUIDisplayController>();
+
+            if (displayController != null)
+                displayController.HideData();
+        }
 
 
         //Getters, Setters, & Commands
@@ -231,66 +251,6 @@ namespace SullysToolkit
         }
 
 
-
-        /*
-        public void InteractWithNeighborOrMoveToNeighbor((int, int) xyDirection)
-        {
-            if (_gameBoard != null && _selectedGamePiece != null)
-            {
-
-                int xTargetCell = xyDirection.Item1 + _selectedGamePiece.GetGridPosition().Item1;
-                int yTargetCell = xyDirection.Item2 + _selectedGamePiece.GetGridPosition().Item2;
-
-                STKDebugLogger.LogStatement(_isDebugActive, $"Attempting Interaction Command onto Cell {xTargetCell},{yTargetCell}...");
-
-                if (_gameBoard.GetGrid().IsCellInGrid(xTargetCell, yTargetCell))
-                {
-                    List<GamePiece> gamePiecesOnTargetPosition = _gameBoard.GetPiecesOnPosition((xTargetCell, yTargetCell));
-
-                    IEnumerable<GamePiece> unitOnPosition =
-                        from piece in gamePiecesOnTargetPosition
-                        where piece.GetGamePieceType() == GamePieceType.Unit
-                        select piece;
-
-                    IEnumerable<GamePiece> pointOfInterestOnPosition =
-                        from piece in gamePiecesOnTargetPosition
-                        where piece.GetGamePieceType() == GamePieceType.PointOfInterest
-                        select piece;
-
-                    IEnumerable<GamePiece> terrainOnPosition =
-                        from piece in gamePiecesOnTargetPosition
-                        where piece.GetGamePieceType() == GamePieceType.Terrain
-                        select piece;
-
-                    if (unitOnPosition.Any())
-                    {
-                        STKDebugLogger.LogStatement(_isDebugActive, $"Found a Unit to Interact With: {unitOnPosition.First()}");
-                        MakeSelectedGamePieceInteractWithOtherGamePiece(unitOnPosition.First());
-                    }
-                        
-
-                    else if (pointOfInterestOnPosition.Any())
-                    {
-                        STKDebugLogger.LogStatement(_isDebugActive, $"Found a Point Of Interest to interact with: {pointOfInterestOnPosition.First()}");
-                        MoveSelectedPieceToSelectedAdjacentTerrain();
-                        MakeSelectedGamePieceInteractWithOtherGamePiece(pointOfInterestOnPosition.First());
-                    }
-                        
-
-                    else if (terrainOnPosition.Any())
-                    {
-                        STKDebugLogger.LogStatement(_isDebugActive, $"Found only Terrain here: {terrainOnPosition.First()}");
-                        MoveSelectedPieceToSelectedAdjacentTerrain();
-                    }
-                        
-                }
-                else
-                    STKDebugLogger.LogStatement(_isDebugActive, $"Aborting Interaction. Cell {xTargetCell},{yTargetCell} isn't On the grid");
-            }
-        }
-        */
-
-
         public GameObject GetSelection()
         {
             return _selectedGamePiece.gameObject;
@@ -310,8 +270,11 @@ namespace SullysToolkit
                         {
                             STKDebugLogger.LogStatement(_isDebugActive,$"First Selection Made (Unit): {gamePiece}");
                             _selectedGamePiece = gamePiece;
+                            DisplaySelectedGamePieceData();
                             ChangeSelectionFilterToDetectTerrain();
                             CooldownSelection();
+                            
+
                         }
 
                         //this can only happen if we've already selected a unit. The selection filter changes when a unit is selected,
@@ -333,6 +296,7 @@ namespace SullysToolkit
                             }
 
                             STKDebugLogger.LogStatement(_isDebugActive, $"Command Execution Completed. Selector Reset");
+                            HideSelectedGamePieceData();
                             ClearSelection();
                             ChangeSelectionFilterToDetectUnits();
                             CooldownSelection();
@@ -341,6 +305,7 @@ namespace SullysToolkit
                         else
                         {
                             STKDebugLogger.LogStatement(_isDebugActive, $"Selection Miss Detected. Selector Reset");
+                            HideSelectedGamePieceData();
                             ClearSelection();
                             ChangeSelectionFilterToDetectUnits();
                         }

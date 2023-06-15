@@ -10,8 +10,11 @@ namespace SullysToolkit
         [SerializeField] private string _name = "Unnamed Piece";
         [SerializeField] private string _faction = "Independent";
         [SerializeField] private bool _isHostile = false;
+        [SerializeField] private string _pieceDescription = "Undescribed Piece";
         private GamePiece _gamePieceReference;
 
+        public delegate void IdentityEvent();
+        public event IdentityEvent OnIdentityChanged;
 
         //Monobehaviours
         private void Awake()
@@ -24,6 +27,11 @@ namespace SullysToolkit
         private void InitializeReferences()
         {
             _gamePieceReference = GetComponent<GamePiece>();
+        }
+
+        private void TriggerIndentityChangedEvent()
+        {
+            OnIdentityChanged?.Invoke();
         }
 
 
@@ -51,18 +59,41 @@ namespace SullysToolkit
         public void SetFaction(string newFaction)
         {
             if (newFaction != null)
+            {
                 _faction = newFaction;
+                TriggerIndentityChangedEvent();
+            }
         }
 
         public void SetHostility(bool value)
         {
             _isHostile = value;
+            TriggerIndentityChangedEvent();
         }
 
         public void SetName(string newName)
         {
             if (newName != null)
+            {
                 _name = newName;
+                TriggerIndentityChangedEvent();
+            }
+               
+        }
+
+        public string GetDescription()
+        {
+            return _pieceDescription;
+        }
+
+        public void SetDescription(string newDescription)
+        {
+            if (newDescription != null)
+            {
+                _pieceDescription = newDescription;
+                TriggerIndentityChangedEvent();
+            }
+                
         }
     }
 }

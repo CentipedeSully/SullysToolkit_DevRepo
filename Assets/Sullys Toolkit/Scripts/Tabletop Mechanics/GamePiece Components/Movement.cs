@@ -24,8 +24,7 @@ namespace SullysToolkit
         //Events
         public delegate void MovementEvent();
         public event MovementEvent OnGamePieceMoved;
-        //public event MovementEvent OnMovementEntered;
-        //public event MovementEvent OnMovementExited;
+        public event MovementEvent OnMPValueChanged;
 
 
 
@@ -70,9 +69,13 @@ namespace SullysToolkit
             STKDebugLogger.LogStatement(_isDebugActive, $"Decrementing {cost} MovePoints from {_gamePieceReference.gameObject.name}...");
             _currentMovePoints -= cost;
             STKDebugLogger.LogStatement(_isDebugActive, $"New total movePoints: {_currentMovePoints}");
+            TriggerMPChangeEvent();
         }
 
-
+        private void TriggerMPChangeEvent()
+        {
+            OnMPValueChanged?.Invoke();
+        }
 
         //Getters, Setters, & Commands
         public GamePiece GetGamePiece()
@@ -88,6 +91,7 @@ namespace SullysToolkit
         public void SetCurrentMovePoints(int value)
         {
             _currentMovePoints = Mathf.Clamp(value, 0, _maxMovePoints);
+            TriggerMPChangeEvent();
         }
 
         public int GetMaxMovePoints()

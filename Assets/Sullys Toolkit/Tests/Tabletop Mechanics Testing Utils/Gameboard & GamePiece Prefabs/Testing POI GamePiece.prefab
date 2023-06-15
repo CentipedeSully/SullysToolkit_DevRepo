@@ -95,7 +95,9 @@ GameObject:
   - component: {fileID: 6825944910069880769}
   - component: {fileID: 6738688316492936325}
   - component: {fileID: 2690187694847000177}
+  - component: {fileID: 4928048698315290364}
   - component: {fileID: 5481386778771950336}
+  - component: {fileID: 3564586473768652721}
   m_Layer: 8
   m_Name: Testing POI GamePiece
   m_TagString: Untagged
@@ -152,6 +154,24 @@ MonoBehaviour:
   _isPoolAvailable: 1
   _gamePieceRef: {fileID: 0}
   _isDebugActive: 0
+--- !u!114 &4928048698315290364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bc8822e4d10c3b4091f3c9ea05b7ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _displayType: 1
+  _displayObject: {fileID: 0}
+  _hideDisplayOnStart: 1
+  _isDebugActive: 0
+  _updateDataCmd: 0
+  _gamePieceRef: {fileID: 0}
 --- !u!61 &5481386778771950336
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -178,3 +198,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &3564586473768652721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9014717636049230286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b201e4a148559564a9f2063e8741d73b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _name: Exp Pool
+  _faction: Independent
+  _isHostile: 0
+  _pieceDescription: A place well-suited for hunting and training. Grants exp to
+    a unit upon interaction.
