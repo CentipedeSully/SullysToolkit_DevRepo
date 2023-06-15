@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class ExpPool : MonoBehaviour, IInteractablePiece, IExperienceProvider
+    public class ExpPool : MonoBehaviour, IInteractablePiece, IExperienceProvider, IDisplayableAttribute
     {
         //Declarations
         [Header("Settings")]
@@ -14,6 +14,7 @@ namespace SullysToolkit
         [SerializeField] private bool _isPoolAvailable = false;
         [SerializeField] private GamePiece _gamePieceRef;
         [SerializeField] private bool _isDebugActive = false;
+        private IUIDisplayController _displayControllerRef;
         
 
         //Events
@@ -31,6 +32,7 @@ namespace SullysToolkit
         private void InitializeReferences()
         {
             _gamePieceRef = GetComponent<GamePiece>();
+            _displayControllerRef = GetComponent<IUIDisplayController>();
         }
 
         private void GrantExpToPerformerAndTriggerEvent(ILevelablePiece gamePiece)
@@ -86,6 +88,7 @@ namespace SullysToolkit
         public void SetExpValue(int value)
         {
             _expValue = Mathf.Max(0, value);
+            UpdateAttributeInDisplay(_displayControllerRef);
         }
 
         public void ResetPool()
@@ -96,6 +99,12 @@ namespace SullysToolkit
         public bool IsPoolAvailable()
         {
             return _isPoolAvailable;
+        }
+
+        public void UpdateAttributeInDisplay(IUIDisplayController displayController)
+        {
+            if (displayController != null)
+                displayController.UpdateData();
         }
     }
 }

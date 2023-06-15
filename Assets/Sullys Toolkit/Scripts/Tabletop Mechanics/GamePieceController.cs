@@ -168,7 +168,13 @@ namespace SullysToolkit
             IUIDisplayController displayController = _selectedGamePiece?.GetComponent<IUIDisplayController>();
 
             if (displayController != null)
-                displayController.DisplayData();
+            {
+                if (displayController.IsDataOnDisplay() == false)
+                    displayController.DisplayData();
+
+                displayController.UpdateData();
+            }
+                
         }
 
         private void HideSelectedGamePieceData()
@@ -176,8 +182,17 @@ namespace SullysToolkit
             IUIDisplayController displayController = _selectedGamePiece?.GetComponent<IUIDisplayController>();
 
             if (displayController != null)
-                displayController.HideData();
+            {
+                if (displayController.IsDataOnDisplay())
+                    displayController.HideData();
+
+                displayController.UpdateData();
+            }
+                
         }
+
+
+
 
 
         //Getters, Setters, & Commands

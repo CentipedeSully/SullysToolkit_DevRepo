@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5215204126479897631}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &539596148
 MonoBehaviour:
@@ -80,7 +80,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5215204126479897631}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5215204126475537504
 MonoBehaviour:
@@ -94,8 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cdc21c4e8ca047468e1f9f57eeeba0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rows: 3
-  _columns: 5
+  _rows: 9
+  _columns: 15
   _cellSize: 1
   _gamePiecesInPlay: []
   _turnSystem: {fileID: 539596148}
@@ -128,10 +128,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 539596147}
   - {fileID: 5215204126475537507}
   - {fileID: 5215204128100917444}
   - {fileID: 5215204127688618935}
-  - {fileID: 539596147}
   - {fileID: 7227223183984809929}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -168,7 +168,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5215204126479897631}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5215204127688618934
 MonoBehaviour:
@@ -287,7 +287,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5215204126479897631}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7227223183984809928
 GameObject:
@@ -348,7 +348,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   _isSelectorReady: 1
-  _selectionCooldown: 0.1
+  _selectionCooldown: 0.3
   _turnSystem: {fileID: 539596148}
   _gameBoard: {fileID: 5215204126475537504}
   _mouseRaycasterTool: {fileID: 7227223183984809930}

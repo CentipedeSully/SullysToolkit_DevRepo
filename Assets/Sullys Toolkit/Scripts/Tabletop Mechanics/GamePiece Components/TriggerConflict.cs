@@ -50,7 +50,7 @@ namespace SullysToolkit
                 return;
             }
 
-            else if (attackerAttributes.GetCurrentActionPoints()  > 1)
+            else if (attackerAttributes.GetCurrentActionPoints()  > 0)
             {
                 STKDebugLogger.LogStatement(_isDebugActive, $"Comparing the Identities of self(defender) and Attacker({performer})...");
                 IIdentityDefinition identifiedGamePiece = performer.GetComponent<IIdentityDefinition>();

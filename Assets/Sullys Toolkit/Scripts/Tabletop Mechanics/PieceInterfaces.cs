@@ -173,4 +173,10 @@ namespace SullysToolkit
 
         void SetupDisplayOnStart();
     }
+
+    public interface IDisplayableAttribute
+    {
+        void UpdateAttributeInDisplay(IUIDisplayController displayController);
+    }
+
 }

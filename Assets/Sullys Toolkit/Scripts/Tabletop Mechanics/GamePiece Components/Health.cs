@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class Health : MonoBehaviour, IHealthManager, IHealablePiece, IDamageablePiece, IRegenerateable
+    public class Health : MonoBehaviour, IHealthManager, IHealablePiece, IDamageablePiece, IRegenerateable, IDisplayableAttribute
     {
 
         //Declarations
@@ -17,6 +17,7 @@ namespace SullysToolkit
 
         [Header("References")]
         [SerializeField] private GamePiece _gamePieceReference;
+        [SerializeField] private IUIDisplayController _displayControllerRef;
 
         //Events
         public delegate void HealthEvent(int value);
@@ -31,11 +32,24 @@ namespace SullysToolkit
             InitializeSettings();
         }
 
+        private void OnEnable()
+        {
+            OnHealed += UpdateDisplayWrapper;
+            OnDamaged += UpdateDisplayWrapper;
+        }
+
+        private void OnDisable()
+        {
+            OnHealed -= UpdateDisplayWrapper;
+            OnDamaged -= UpdateDisplayWrapper;
+        }
+
 
         //Internal Utils
         private void InitializeSettings()
         {
             _gamePieceReference = GetComponent<GamePiece>();
+            _displayControllerRef = GetComponent<IUIDisplayController>();
             _currentHealth = _maxHealth;
         }
 
@@ -93,6 +107,17 @@ namespace SullysToolkit
         public void RegenerateAttributes()
         {
             ReceiveHeals(_regenAmount);
+        }
+
+        public void UpdateAttributeInDisplay(IUIDisplayController displayController)
+        {
+            if (displayController != null)
+                displayController.UpdateData();
+        }
+
+        public void UpdateDisplayWrapper(int value)
+        {
+            UpdateAttributeInDisplay(_displayControllerRef);
         }
     }
 }

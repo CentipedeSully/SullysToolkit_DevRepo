@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class Movement : MonoBehaviour, IMoveablePiece, IRegenerateable
+    public class Movement : MonoBehaviour, IMoveablePiece, IRegenerateable, IDisplayableAttribute
     {
         //Declarations
         [Header("Movement Attributes")]
@@ -17,6 +17,7 @@ namespace SullysToolkit
 
         [Header("References")]
         [SerializeField] private GamePiece _gamePieceReference;
+        [SerializeField] private IUIDisplayController _displayControllerRef;
 
         [Header("Debugging Utils")]
         [SerializeField] private bool _isDebugActive = false;
@@ -34,12 +35,22 @@ namespace SullysToolkit
             InitializeSettings();
         }
 
+        private void OnEnable()
+        {
+            OnMPValueChanged += UpdateDisplayWrapper;
+        }
 
+        private void OnDisable()
+        {
+            OnMPValueChanged -= UpdateDisplayWrapper;
+        }
 
         //Internal Utils
         private void InitializeSettings()
         {
             _gamePieceReference = GetComponent<GamePiece>();
+            _displayControllerRef = GetComponent<IUIDisplayController>();
+
             _currentMovePoints = _maxMovePoints;
         }
 
@@ -76,6 +87,9 @@ namespace SullysToolkit
         {
             OnMPValueChanged?.Invoke();
         }
+
+
+
 
         //Getters, Setters, & Commands
         public GamePiece GetGamePiece()
@@ -178,6 +192,16 @@ namespace SullysToolkit
         public void RegenerateAttributes()
         {
             SetCurrentMovePoints(_maxMovePoints);
+        }
+
+        public void UpdateAttributeInDisplay(IUIDisplayController displayController)
+        {
+            displayController.UpdateData();
+        }
+
+        public void UpdateDisplayWrapper()
+        {
+            UpdateAttributeInDisplay(_displayControllerRef);
         }
     }
 

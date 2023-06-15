@@ -12,6 +12,7 @@ namespace SullysToolkit
         [SerializeField] private GameObject _displayObject;
         [SerializeField] private bool _hideDisplayOnStart = true;
         [SerializeField] private bool _isDebugActive = false;
+        [SerializeField] private bool _isDisplayReady = false;
 
 
         [Header("Debugging Utilities")]
@@ -131,6 +132,8 @@ namespace SullysToolkit
                         break;
                 }
             }
+
+            _isDisplayReady = true;
             UpdateData();
 
             if (_hideDisplayOnStart == true)
@@ -140,16 +143,19 @@ namespace SullysToolkit
 
         public void UpdateData()
         {
-            if (_displayType == GamePieceType.Unit)
-                GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _healthRef.GetCurrentHealth(), _attributeRef.GetAtkModifier(),
-                    _attributeRef.GetDef(), _attributeRef.GetDamageDie(), _attributeRef.GetDamageModifier(), _attributeRef.GetCurrentActionPoints(),
-                    _movementRef.GetCurrentMovePoints());
+            if (_isDisplayReady)
+            {
+                if (_displayType == GamePieceType.Unit)
+                    GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _healthRef.GetCurrentHealth(), _attributeRef.GetAtkModifier(),
+                        _attributeRef.GetDef(), _attributeRef.GetDamageDie(), _attributeRef.GetDamageModifier(), _attributeRef.GetCurrentActionPoints(),
+                        _movementRef.GetCurrentMovePoints());
 
-            else if (_displayType == GamePieceType.PointOfInterest)
-                GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _identityRef.GetDescription(), _expProviderRef.GetExpValue());
+                else if (_displayType == GamePieceType.PointOfInterest)
+                    GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _identityRef.GetDescription(), _expProviderRef.GetExpValue());
 
-            else if (_displayType == GamePieceType.Terrain)
-                GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _identityRef.GetDescription());
+                else if (_displayType == GamePieceType.Terrain)
+                    GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _identityRef.GetDescription());
+            }
         }
     }
 }

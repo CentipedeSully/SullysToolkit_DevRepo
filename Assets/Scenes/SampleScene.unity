@@ -864,7 +864,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &603290695
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2488,9 +2488,9 @@ MonoBehaviour:
   _poiName: {fileID: 1627499910}
   _poiDescription: {fileID: 878443756}
   _poiReward: {fileID: 1135846021}
-  _terrainDisplayObject: {fileID: 0}
-  _terrainName: {fileID: 0}
-  _terrainDescription: {fileID: 0}
+  _terrainDisplayObject: {fileID: 603290694}
+  _terrainName: {fileID: 1740772922}
+  _terrainDescription: {fileID: 1740537630}
 --- !u!1 &1316176519
 GameObject:
   m_ObjectHideFlags: 0

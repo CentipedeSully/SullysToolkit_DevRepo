@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class Identity : MonoBehaviour, IIdentityDefinition
+    public class Identity : MonoBehaviour, IIdentityDefinition, IDisplayableAttribute
     {
         //Declarations
         [SerializeField] private string _name = "Unnamed Piece";
@@ -12,6 +12,7 @@ namespace SullysToolkit
         [SerializeField] private bool _isHostile = false;
         [SerializeField] private string _pieceDescription = "Undescribed Piece";
         private GamePiece _gamePieceReference;
+        private IUIDisplayController _displayControllerRef;
 
         public delegate void IdentityEvent();
         public event IdentityEvent OnIdentityChanged;
@@ -22,11 +23,22 @@ namespace SullysToolkit
             InitializeReferences();
         }
 
+        private void OnEnable()
+        {
+            OnIdentityChanged += UpdateDisplayWrapper;
+        }
+
+        private void OnDisable()
+        {
+            OnIdentityChanged -= UpdateDisplayWrapper;
+        }
+
 
         //Internal Utils
         private void InitializeReferences()
         {
             _gamePieceReference = GetComponent<GamePiece>();
+            _displayControllerRef = GetComponent<IUIDisplayController>();
         }
 
         private void TriggerIndentityChangedEvent()
@@ -94,6 +106,17 @@ namespace SullysToolkit
                 TriggerIndentityChangedEvent();
             }
                 
+        }
+
+        public void UpdateAttributeInDisplay(IUIDisplayController displayController)
+        {
+            if (displayController != null)
+                displayController.UpdateData();
+        }
+
+        public void UpdateDisplayWrapper()
+        {
+            UpdateAttributeInDisplay(_displayControllerRef);
         }
     }
 }

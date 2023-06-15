@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
-    public class UnitAttributes : MonoBehaviour, IAttributes, IRegenerateable, IExperienceProvider
+    public class UnitAttributes : MonoBehaviour, IAttributes, IRegenerateable, IExperienceProvider, IDisplayableAttribute
     {
         //Declarations
         [SerializeField] private int _currentActionPoints = 1;
@@ -19,6 +19,8 @@ namespace SullysToolkit
         [SerializeField] private bool _useCustomExpValue;
         [SerializeField] private int _expValue = 0;
 
+        private IUIDisplayController _displayController;
+
         //Events
         public delegate void AttributeEvent();
         public event AttributeEvent OnAttributeChanged;
@@ -27,12 +29,21 @@ namespace SullysToolkit
 
 
         //Monobehaviours
-       private void OnEnable()
+        private void Awake()
         {
+            _displayController = GetComponent<IUIDisplayController>();
+        }
+
+        private void OnEnable()
+        {
+            OnAttributeChanged += UpdateDisplayWrapper;
             UpdateExpValue();
         }
 
-
+        private void OnDisable()
+        {
+            OnAttributeChanged -= UpdateDisplayWrapper;
+        }
 
 
         //Internal Utils
@@ -124,6 +135,7 @@ namespace SullysToolkit
         {
             _damageModifier = value;
             UpdateExpValue();
+            TriggerAttributeChangedEvent();
         }
 
         public void SetDef(int value)
@@ -144,6 +156,16 @@ namespace SullysToolkit
             SetCurrentActionPoints(_currentActionPoints);
             UpdateExpValue();
             TriggerAttributeChangedEvent();
+        }
+
+        public void UpdateAttributeInDisplay(IUIDisplayController displayController)
+        {
+            displayController?.UpdateData();
+        }
+
+        public void UpdateDisplayWrapper()
+        {
+            UpdateAttributeInDisplay(_displayController);
         }
     }
 }
