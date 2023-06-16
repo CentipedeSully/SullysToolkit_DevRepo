@@ -67,7 +67,7 @@ namespace SullysToolkit
             if (Input.GetMouseButtonDown(0) && _isSelectorReady)
             {
                 CooldownSelection();
-                STKDebugLogger.LogStatement(_isDebugActive, $"Left-click detected. Performing contextual selection request...");
+                STKDebugLogger.LogStatement(_isDebugActive, $"Left-click detected. Determining contextual selection request...");
                 (int, int) xySelectedPosition = _gameBoard.GetGrid().GetCellFromPosition(_mouseToWorldTrackerRef.GetWorldPosition());
 
                 if (xySelectedPosition == (-1,-1))
@@ -88,10 +88,10 @@ namespace SullysToolkit
                 }
             }
 
-            else if (Input.GetMouseButtonDown(1) && _isSelectorReady && IsSelectionAvailable())
+            else if (Input.GetMouseButtonDown(1) && _isSelectorReady && IsSelectionAvailable() && _isControlAvailable)
             {
                 CooldownSelection();
-                STKDebugLogger.LogStatement(_isDebugActive, $"Right-click detected. Performing contextual action request");
+                STKDebugLogger.LogStatement(_isDebugActive, $"Right-click detected. Determining contextual action request...");
                 (int, int) xySelectedPosition = _gameBoard.GetGrid().GetCellFromPosition(_mouseToWorldTrackerRef.GetWorldPosition());
 
                 if (xySelectedPosition == (-1, -1))
@@ -100,7 +100,7 @@ namespace SullysToolkit
                 else
                 {
                     STKDebugLogger.LogStatement(_isDebugActive, $"Right Click on good position. Unimplemented, but good ^_^");
-
+                    
                 }
             }
         }
@@ -267,7 +267,7 @@ namespace SullysToolkit
         private void PerformInteractionBtwnGamePieces(GamePiece actorPiece, GamePiece subjectPiece)
         {
             STKDebugLogger.LogStatement(_isDebugActive, $"Attempting to perform an interaction btwn gamePieces: \n" +
-                $"Actor ({actorPiece?.name},ID: {actorPiece?.GetInstanceID()})\n" +
+                $"Actor ({actorPiece?.name}, ID: {actorPiece?.GetInstanceID()})\n" +
                 $"Subject ({subjectPiece?.name}, ID: {subjectPiece?.GetInstanceID()})");
 
             IInteractablePiece validatedInteractablePiece = subjectPiece?.GetComponent<IInteractablePiece>();
