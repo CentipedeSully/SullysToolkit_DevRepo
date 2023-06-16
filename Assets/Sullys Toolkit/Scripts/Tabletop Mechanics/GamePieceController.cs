@@ -13,118 +13,270 @@ namespace SullysToolkit
         [SerializeField] private bool _isControlAvailable = false;
 
         [Header("Selection Settings")]
-        [SerializeField] private GamePiece _selectedGamePiece;
-        [SerializeField] private GamePiece _selectedTerrainPosition;
-        [Space(20)]
-
-        [SerializeField] private bool _isTargetingOnlyTerrain;
-        [SerializeField] private bool _isTargetingOnlyUnits;
-        [SerializeField] private LayerMask _unitSelectionMask;
-        [SerializeField] private LayerMask _terrainSelectionMask;
         [SerializeField] private bool _isSelectorReady = true;
-        [SerializeField] private float _selectionCooldown = .1f;
+        [SerializeField] private float _selectionCooldown = .35f;
+        [Tooltip("The first element takes priority over what will get shown. " +
+            "If the gamepiece of that type doesn't exist, then the gamepiece of the next proiority will be displayed instead.")]
+        [SerializeField] private List<GamePieceType> _displayPriorityList;
+        [SerializeField] [Min(-1)] private int _selectedPositionX = -1;
+        [SerializeField] [Min(-1)] private int _selectedPositionY = -1;
+        [SerializeField] private GamePiece _unitOnSelectedPosition;
+        [SerializeField] private GamePiece _poiOnSelectedPosition;
+        [SerializeField] private GamePiece _terrainOnSelectedPosition;
+
 
 
 
         [Header("References")]
         [SerializeField] private TurnSystem _turnSystem;
         [SerializeField] private GameBoard _gameBoard;
-        [SerializeField] private MouseRaycaster _mouseRaycasterTool;
+        [SerializeField] private MouseToWorld2D _mouseToWorldTrackerRef;
 
         [Header("Debugging Utils")]
         [SerializeField] private bool _isDebugActive = false;
 
 
+        //Events
+        public delegate void SelectionEventWithContext(GamePiece selectedPiece);
+        public delegate void SelectionEvent();
+        public event SelectionEventWithContext OnSelectionCaptured;
+        public event SelectionEvent OnSelectionCleared;
+        public event SelectionEvent OnActionPerformed;
+
 
 
         //Monobehaviours
-        private void Start()
+        private void Awake()
         {
-            SetupRaycasterOnStart();
+            
+        }
+
+        private void Update()
+        {
+            ListenForSelectionCommands();
         }
 
 
         //Internal Utils
-        private void SetupRaycasterOnStart()
+        private void ListenForSelectionCommands()
         {
-            _mouseRaycasterTool.SetSelectionCache(this);
-            ChangeSelectionFilterToDetectUnits();
-        }
+            //Left Click -> 0
+            //Right Click -> 1
+            //Middle Click -> 2
 
-        private bool IsSelectedTerrainAdjacentToSelectedGamePiece()
-        {
-            STKDebugLogger.LogStatement(_isDebugActive, $"Checking if Selected Terrain and Selected Gamepiece are adjacent");
-            if (_selectedGamePiece != null && _selectedTerrainPosition != null)
+            if (Input.GetMouseButtonDown(0) && _isSelectorReady)
             {
-                int xDifference = 0; 
-                int yDifference = 0;
+                CooldownSelection();
+                STKDebugLogger.LogStatement(_isDebugActive, $"Left-click detected. Performing contextual selection request...");
+                (int, int) xySelectedPosition = _gameBoard.GetGrid().GetCellFromPosition(_mouseToWorldTrackerRef.GetWorldPosition());
 
-                xDifference = _selectedTerrainPosition.GetGridPosition().Item1 - _selectedGamePiece.GetGridPosition().Item1;
-                yDifference = _selectedTerrainPosition.GetGridPosition().Item2 - _selectedGamePiece.GetGridPosition().Item2;
-
-                STKDebugLogger.LogStatement(_isDebugActive, $"Absolute Distance Btwn Selected GamePiece and Terrain: {xDifference},{yDifference}\n" +
-                    $"Is Selected Terrain and Selected GameObject Adjacent: {Mathf.Abs(xDifference) < 2 && Mathf.Abs(yDifference) < 2}");
-
-                return (Mathf.Abs(xDifference) < 2 && Mathf.Abs(yDifference) < 2);
-
-            }
-            else
-            {
-                STKDebugLogger.LogStatement(_isDebugActive, $"Unable to determine adjacency. One of the Selections is null");
-                return false;
-            }
-            
-        }
-
-        private void MakeSelectedGamePieceInteractWithOtherGamePiece(GamePiece otherGamePiece)
-        {
-            IInteractablePiece interactablePiece = otherGamePiece.GetComponent<IInteractablePiece>();
-
-            if (interactablePiece != null && _selectedGamePiece != null)
-            {
-                if (interactablePiece.GetGamePiece() != _selectedGamePiece)
-                    interactablePiece.TriggerInteractionEvent(_selectedGamePiece);
-            }
-                
-        }
-
-        private void MoveSelectedPieceToSelectedAdjacentTerrain()
-        {
-            //Get movedata
-            IMoveablePiece moveablePiece = _selectedGamePiece?.GetComponent<IMoveablePiece>();
-
-            STKDebugLogger.LogStatement(_isDebugActive, $"Attempting to Move Selected GamePiece {_selectedGamePiece} to selected Terrain {_selectedTerrainPosition}...");
-
-            //Validate TerrainPositioning
-            if (moveablePiece != null && _selectedTerrainPosition != null)
-            {
-                if (IsSelectedTerrainAdjacentToSelectedGamePiece())
+                if (xySelectedPosition == (-1,-1))
                 {
-                    int xDirection = _selectedTerrainPosition.GetGridPosition().Item1 - _selectedGamePiece.GetGridPosition().Item1;
-                    int yDirection = _selectedTerrainPosition.GetGridPosition().Item2 - _selectedGamePiece.GetGridPosition().Item2;
-                    moveablePiece.MoveToNeighborCell((xDirection,yDirection));
+                    STKDebugLogger.LogStatement(_isDebugActive, $"Clearing selection data due to clicking off of game grid");
+                    ClearSelection();
+                    OnSelectionCleared?.Invoke();
                 }
-                    
+
                 else
-                    STKDebugLogger.LogStatement(_isDebugActive, $"selected terrain and gamePiece not adjacent. Ignoring Move Command");
+                {
+                    STKDebugLogger.LogStatement(_isDebugActive, $"Capturing new Selection data...");
+                    ClearSelection();
+
+                    CaptureSelectionViaMousePosition();
+                    DisplaySelectedGamePieceOfHighestPriority();
+                    OnSelectionCaptured?.Invoke(GetHighestPrioritySelection());
+                }
+            }
+
+            else if (Input.GetMouseButtonDown(1) && _isSelectorReady && IsSelectionAvailable())
+            {
+                CooldownSelection();
+                STKDebugLogger.LogStatement(_isDebugActive, $"Right-click detected. Performing contextual action request");
+                (int, int) xySelectedPosition = _gameBoard.GetGrid().GetCellFromPosition(_mouseToWorldTrackerRef.GetWorldPosition());
+
+                if (xySelectedPosition == (-1, -1))
+                    STKDebugLogger.LogStatement(_isDebugActive, $"Ignoring contextual action request due to target being off game grid");
+
+                else
+                {
+                    STKDebugLogger.LogStatement(_isDebugActive, $"Right Click on good position. Unimplemented, but good ^_^");
+
+                }
+            }
+        }
+
+
+
+        private void CaptureSelectionViaMousePosition()
+        {
+            (int, int) xySelection = GetCellPositionFromMouse();
+            _selectedPositionX = xySelection.Item1;
+            _selectedPositionY = xySelection.Item2;
+
+            _unitOnSelectedPosition = GetUnitOnPosition(_selectedPositionX, _selectedPositionY);
+            _poiOnSelectedPosition = GetPoiOnPosition(_selectedPositionX, _selectedPositionY);
+            _terrainOnSelectedPosition = GetTerrainOnPosition(_selectedPositionX, _selectedPositionY);
+        }
+
+        private void DisplaySelectedGamePieceOfHighestPriority()
+        {
+            STKDebugLogger.LogStatement(_isDebugActive, $"Selecting a gamePiece to display based on the current selection data & priority list...");
+            for (int i = 0; i < _displayPriorityList.Count; i++)
+            {
+
+                if (_displayPriorityList[i] == GamePieceType.Unit && _unitOnSelectedPosition != null)
+                {
+                    DisplayGamePieceData(_unitOnSelectedPosition);
+                    return;
+                }
+
+                else if (_displayPriorityList[i] == GamePieceType.PointOfInterest && _poiOnSelectedPosition != null)
+                {
+                    DisplayGamePieceData(_poiOnSelectedPosition);
+                    return;
+                }
+
+                else if (_displayPriorityList[i] == GamePieceType.Terrain && _terrainOnSelectedPosition != null)
+                {
+                    DisplayGamePieceData(_terrainOnSelectedPosition);
+                    return;
+                }
+            }
+
+            STKDebugLogger.LogStatement(_isDebugActive, $"No selection exists to display");
+        }
+
+        private GamePiece GetHighestPrioritySelection()
+        {
+            STKDebugLogger.LogStatement(_isDebugActive, $"Determining the non-null selection of highest priority...");
+            for (int i = 0; i < _displayPriorityList.Count; i++)
+            {
+
+                if (_displayPriorityList[i] == GamePieceType.Unit && _unitOnSelectedPosition != null)
+                    return _unitOnSelectedPosition;
+
+                else if (_displayPriorityList[i] == GamePieceType.PointOfInterest && _poiOnSelectedPosition != null)
+                    return _poiOnSelectedPosition;
+
+                else if (_displayPriorityList[i] == GamePieceType.Terrain && _terrainOnSelectedPosition != null)
+                    return _terrainOnSelectedPosition;
+            }
+
+            STKDebugLogger.LogStatement(_isDebugActive, $"No Selection exists. Returning null");
+            return null;
+        }
+
+        private (int,int) GetCellPositionFromMouse()
+        {
+            STKDebugLogger.LogStatement(_isDebugActive, "Capturing Grid Selection via Mouse Position...");
+            Vector3 mousePosition = _mouseToWorldTrackerRef.GetWorldPosition();
+            if (_gameBoard.GetGrid().IsPositionOnGrid(mousePosition))
+            {
+                (int, int) xySelectedPosition = _gameBoard.GetGrid().GetCellFromPosition(mousePosition);
+
+                STKDebugLogger.LogStatement(_isDebugActive, $"Selected Position ({xySelectedPosition.Item1},{xySelectedPosition.Item2})");
+                return xySelectedPosition;
+            }
+
+            else
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"No Position found. Mouse isn't on Game Grid. Returning (-1,-1)");
+                return (-1, -1);
+            }
+        }
+
+        private GamePiece GetUnitOnPosition(int x, int y)
+        {
+            STKDebugLogger.LogStatement(_isDebugActive, $"Getting unit on position ({x},{y})...");
+            List<GamePiece> allPiecesOnPosition = _gameBoard.GetPiecesOnPosition((x,y));
+
+            IEnumerable<GamePiece> unitQuery =
+                from piece in allPiecesOnPosition
+                where piece.GetGamePieceType() == GamePieceType.Unit
+                select piece;
+
+            if (unitQuery.Any())
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"Unit Detected: {unitQuery.First().name}, ID: {unitQuery.First().GetInstanceID()}");
+                return unitQuery.First();
             }
                 
             else
-                STKDebugLogger.LogStatement(_isDebugActive, $"Move Aborted due to null selection.");
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"No unit Detected");
+                return null;
+            }
         }
 
-        private void MakeSelectedPieceInteractWithItsCurrentPosition()
+        private GamePiece GetPoiOnPosition(int x, int y)
         {
-            if (_selectedGamePiece != null)
-            { 
-                List<GamePiece> piecesOnCurrentPosition = _gameBoard.GetPiecesOnPosition(_selectedGamePiece.GetGridPosition());
-                IEnumerable<GamePiece> pointOfInterestQuery =
-                    from piece in piecesOnCurrentPosition
-                    where piece.GetGamePieceType() == GamePieceType.PointOfInterest
-                    select piece;
+            STKDebugLogger.LogStatement(_isDebugActive, $"Getting PoI on position ({x},{y})...");
+            List<GamePiece> allPiecesOnPosition = _gameBoard.GetPiecesOnPosition((x, y));
 
-                MakeSelectedGamePieceInteractWithOtherGamePiece(pointOfInterestQuery.First());
+            IEnumerable<GamePiece> poiQuery =
+                from piece in allPiecesOnPosition
+                where piece.GetGamePieceType() == GamePieceType.PointOfInterest
+                select piece;
+
+            if (poiQuery.Any())
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"PoI Detected: {poiQuery.First().name}, ID: {poiQuery.First().GetInstanceID()}");
+                return poiQuery.First();
             }
+
+            else
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"No PoI Detected");
+                return null;
+            }
+        }
+
+        private GamePiece GetTerrainOnPosition(int x, int y)
+        {
+            STKDebugLogger.LogStatement(_isDebugActive, $"Getting Terrain on position ({x},{y})...");
+            List<GamePiece> allPiecesOnPosition = _gameBoard.GetPiecesOnPosition((x, y));
+
+            IEnumerable<GamePiece> terrainQuery =
+                from piece in allPiecesOnPosition
+                where piece.GetGamePieceType() == GamePieceType.Terrain
+                select piece;
+
+            if (terrainQuery.Any())
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"Terrain Detected: {terrainQuery.First().name}, ID: {terrainQuery.First().GetInstanceID()}");
+                return terrainQuery.First();
+            }
+
+            else
+            {
+                STKDebugLogger.LogStatement(_isDebugActive, $"No Terrain Detected");
+                return null;
+            }
+        }
+
+        private void MoveGamePieceInDirection(GamePiece movingPiece,(int,int) xyDirection)
+        {
+            STKDebugLogger.LogStatement(_isDebugActive, $"Attempting to move gamePiece ({movingPiece?.name},ID: {movingPiece?.GetInstanceID()})");
+            IMoveablePiece validatedMoveablePiece = movingPiece?.GetComponent<IMoveablePiece>();
+            if (validatedMoveablePiece != null)
+                validatedMoveablePiece.MoveToNeighborCell(xyDirection);
+            else
+                STKDebugLogger.LogStatement(_isDebugActive,$"GamePiece Controller attempted to move a null Piece. Ignoring Command");
+        }
+
+        private void PerformInteractionBtwnGamePieces(GamePiece actorPiece, GamePiece subjectPiece)
+        {
+            STKDebugLogger.LogStatement(_isDebugActive, $"Attempting to perform an interaction btwn gamePieces: \n" +
+                $"Actor ({actorPiece?.name},ID: {actorPiece?.GetInstanceID()})\n" +
+                $"Subject ({subjectPiece?.name}, ID: {subjectPiece?.GetInstanceID()})");
+
+            IInteractablePiece validatedInteractablePiece = subjectPiece?.GetComponent<IInteractablePiece>();
+
+            if (validatedInteractablePiece != null)
+                validatedInteractablePiece.TriggerInteractionEvent(actorPiece);
+
+            else
+                STKDebugLogger.LogStatement(_isDebugActive, $"GamePiece Controller attempted to perform an interact onto a null piece. Ignoring Command");
         }
 
         private void CooldownSelection()
@@ -138,34 +290,9 @@ namespace SullysToolkit
             _isSelectorReady = true;
         }
 
-        private GamePiece GetUnitOnSelectedTerrain()
+        private void DisplayGamePieceData(GamePiece piece)
         {
-            int xPosition = _selectedTerrainPosition.GetGridPosition().Item1;
-            int yPosition = _selectedTerrainPosition.GetGridPosition().Item2;
-            List<GamePiece> gamePiecesOnSelectedPosition = _gameBoard.GetPiecesOnPosition((xPosition, yPosition));
-            STKDebugLogger.LogStatement(_isDebugActive, $"Checking Selected Terrain ({xPosition},{yPosition}) for Occupancy...");
-
-            IEnumerable<GamePiece> unitOnPosition =
-                from piece in gamePiecesOnSelectedPosition
-                where piece.GetGamePieceType() == GamePieceType.Unit
-                select piece;
-
-            if (unitOnPosition.Any())
-            {
-                STKDebugLogger.LogStatement(_isDebugActive, $"Found a Unit at position ({xPosition},{yPosition}): {unitOnPosition.First()}");
-                return unitOnPosition.First();
-            }
-            else
-            {
-                STKDebugLogger.LogStatement(_isDebugActive, $"No Unit found on position ({xPosition},{yPosition})");
-                return null;
-            }
-
-        }
-
-        private void DisplaySelectedGamePieceData()
-        {
-            IUIDisplayController displayController = _selectedGamePiece?.GetComponent<IUIDisplayController>();
+            IUIDisplayController displayController = piece?.GetComponent<IUIDisplayController>();
 
             if (displayController != null)
             {
@@ -177,9 +304,9 @@ namespace SullysToolkit
                 
         }
 
-        private void HideSelectedGamePieceData()
+        private void HideGamePieceData(GamePiece piece)
         {
-            IUIDisplayController displayController = _selectedGamePiece?.GetComponent<IUIDisplayController>();
+            IUIDisplayController displayController = piece?.GetComponent<IUIDisplayController>();
 
             if (displayController != null)
             {
@@ -243,114 +370,51 @@ namespace SullysToolkit
 
         public void ClearSelection()
         {
-            _selectedGamePiece = null;
-            _selectedTerrainPosition = null;
-        }
+            if (_unitOnSelectedPosition != null)
+            {
+                HideGamePieceData(_unitOnSelectedPosition);
+                _unitOnSelectedPosition = null;
+            }
 
-        public void ChangeSelectionFilterToDetectUnits()
-        {
-            _isTargetingOnlyUnits = true;
-            _mouseRaycasterTool.SetSelectableLayers(_unitSelectionMask);
+            if (_poiOnSelectedPosition != null)
+            {
+                HideGamePieceData(_poiOnSelectedPosition);
+                _poiOnSelectedPosition = null;
+            }
 
-            if (_isTargetingOnlyTerrain)
-                _isTargetingOnlyTerrain = false;
-        }
-
-        public void ChangeSelectionFilterToDetectTerrain()
-        {
-            _isTargetingOnlyTerrain = true;
-            _mouseRaycasterTool.SetSelectableLayers(_terrainSelectionMask);
-
-            if (_isTargetingOnlyUnits)
-                _isTargetingOnlyUnits = false;
+            if (_terrainOnSelectedPosition != null)
+            {
+                HideGamePieceData(_terrainOnSelectedPosition);
+                _terrainOnSelectedPosition = null;
+            }
         }
 
 
         public GameObject GetSelection()
         {
-            return _selectedGamePiece.gameObject;
+            return GetHighestPrioritySelection().gameObject;
         }
 
         public void SetSelection(GameObject newSelection)
         {
-            if (_isSelectorReady)
-            {
-                if (newSelection != null)
-                {
-                    GamePiece gamePiece = newSelection.GetComponent<GamePiece>();
-
-                    if (gamePiece != null)
-                    {
-                        if (gamePiece.GetGamePieceType() == GamePieceType.Unit)
-                        {
-                            STKDebugLogger.LogStatement(_isDebugActive,$"First Selection Made (Unit): {gamePiece}");
-                            _selectedGamePiece = gamePiece;
-                            DisplaySelectedGamePieceData();
-                            ChangeSelectionFilterToDetectTerrain();
-                            CooldownSelection();
-                            
-
-                        }
-
-                        //this can only happen if we've already selected a unit. The selection filter changes when a unit is selected,
-                        //which makes selecting a unit a second time impossible.
-                        else if (gamePiece.GetGamePieceType() == GamePieceType.Terrain)
-                        {
-                            STKDebugLogger.LogStatement(_isDebugActive, $"Second Selection Made (Terrain): {gamePiece}");
-                            _selectedTerrainPosition = gamePiece;
-
-                            if (IsSelectedTerrainAdjacentToSelectedGamePiece())
-                            {
-                                GamePiece foundUnit = GetUnitOnSelectedTerrain();
-
-                                if (foundUnit != null && foundUnit != _selectedGamePiece)
-                                    MakeSelectedGamePieceInteractWithOtherGamePiece(foundUnit);
-
-                                else if (foundUnit == null)
-                                    MoveSelectedPieceToSelectedAdjacentTerrain();
-                            }
-
-                            STKDebugLogger.LogStatement(_isDebugActive, $"Command Execution Completed. Selector Reset");
-                            HideSelectedGamePieceData();
-                            ClearSelection();
-                            ChangeSelectionFilterToDetectUnits();
-                            CooldownSelection();
-                        }
-
-                        else
-                        {
-                            STKDebugLogger.LogStatement(_isDebugActive, $"Selection Miss Detected. Selector Reset");
-                            HideSelectedGamePieceData();
-                            ClearSelection();
-                            ChangeSelectionFilterToDetectUnits();
-                        }
-                    }
-                }
-                else
-                {
-                    STKDebugLogger.LogStatement(_isDebugActive, $"Selected gameObject has no GamePiece Component. Selector Reset");
-                    ClearSelection();
-                    ChangeSelectionFilterToDetectUnits();
-                }
-            }
-
-            //STKDebugLogger.LogStatement(_isDebugActive, $"Selector Still Cooling down to avoid undesired multiclicking. Please Wait...");
-
-
-
+            STKDebugLogger.LogWarning("Only selection via mouse are supported, currently");
         }
 
         public List<GameObject> GetSelectionCollection()
         {
-            if (_selectedGamePiece == null)
-                return new List<GameObject>();
-            else
-            {
-                List<GameObject> returnList = new List<GameObject>();
-                returnList.Add(_selectedGamePiece.gameObject);
+            List<GameObject> returnList = new List<GameObject>();
 
-                return returnList;
-            }
+            if (_unitOnSelectedPosition != null)
+                returnList.Add(_unitOnSelectedPosition.gameObject);
+
+            if (_poiOnSelectedPosition != null)
+                returnList.Add(_poiOnSelectedPosition.gameObject);
+
+            if (_terrainOnSelectedPosition != null)
+                returnList.Add(_terrainOnSelectedPosition.gameObject);
+
+            return returnList;
+           
         }
 
         public void AddSelection(GameObject newSelection)
@@ -361,12 +425,15 @@ namespace SullysToolkit
         public void RemoveSelection(GameObject existingSelection)
         {
             ClearSelection();
-            ChangeSelectionFilterToDetectUnits();
         }
 
         public bool IsSelectionAvailable()
         {
-            return _selectedGamePiece != null;
+            bool unitExists = _unitOnSelectedPosition != null;
+            bool poiExists = _poiOnSelectedPosition != null;
+            bool terrainExists = _terrainOnSelectedPosition != null;
+
+            return unitExists || poiExists || terrainExists;
         }
     }
 }

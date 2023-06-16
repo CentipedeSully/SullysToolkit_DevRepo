@@ -8,6 +8,9 @@ namespace SullysToolkit
     public class GamePieceDisplayer : MonoSingleton<GamePieceDisplayer>
     {
         //Declarations
+        [Header("Overall Display Settings")]
+        [SerializeField] private bool _hideAllDisplaysOnAwake = true;
+
         [Header("Unit Display Settings")]
         [SerializeField] private GameObject _unitDisplayObject;
         [SerializeField] private TextMeshProUGUI _unitName;
@@ -31,12 +34,28 @@ namespace SullysToolkit
 
 
 
+
+
         //Monobehavours
         //...
 
 
         //Internal Utils
-        //...
+        protected override void InitializeAdditionalFields()
+        {
+            SetupDisplays();
+        }
+
+        private void SetupDisplays()
+        {
+            if (_hideAllDisplaysOnAwake)
+            {
+                _unitDisplayObject.SetActive(false);
+                _pointOfInterestDisplayObject.SetActive(false);
+                _terrainDisplayObject.SetActive(false);
+            }
+        }
+
 
 
         //Getters Setters, & Commands

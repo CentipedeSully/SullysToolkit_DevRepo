@@ -53,11 +53,10 @@ namespace SullysToolkit
                     if (!_selectionList.Contains(newSelection))
                     {
                         _selectionList.Add(newSelection);
-                        if (_isDebugActive)
-                            Debug.Log("Added new object to the 'selection' Collection");
+                        STKDebugLogger.LogStatement(_isDebugActive, $"Added new object ({newSelection.gameObject.name}, ID:{GetInstanceID()}) to the 'selection' Collection");
                     }
-                    if (_isDebugActive)
-                        Debug.Log("Object Already exists in collection");
+                    else
+                        STKDebugLogger.LogStatement(_isDebugActive, $"Object ({newSelection.gameObject.name}, ID:{GetInstanceID()}) already exists in 'selection' Collection");
                 }
                 else SetSelection(newSelection);
 
@@ -68,17 +67,16 @@ namespace SullysToolkit
         public void ClearSelection()
         {
             _selectionList = new List<GameObject>();
-            if (_isDebugActive)
-                Debug.Log("Selection Collection Cleared");
+            STKDebugLogger.LogStatement(_isDebugActive, "Selection Collection Cleared");
         }
 
         public GameObject GetSelection()
         {
-            if (IsSelectionAvailable())
+            if (_selectionList.Count > 1)
                 return _selectionList[0];
             else
             {
-                Debug.LogWarning($"Error in Selection Manager: Fetched a selection that doesn't exist. Return a default value...");
+                STKDebugLogger.LogWarning($"Attempted to Fetch a selection that doesn't exist in {name}. Return a default value...");
                 return default;
             }
         }
@@ -100,13 +98,11 @@ namespace SullysToolkit
                 if (_selectionList.Contains(existingSelection))
                 {
                     _selectionList.Remove(existingSelection);
-                    if (_isDebugActive)
-                        Debug.Log("object removed from selection collection");
+                    STKDebugLogger.LogStatement(_isDebugActive, $"object ({existingSelection.name}, ID:{GetInstanceID()}) removed from selection collection");
                 }
 
                 else
-                    if (_isDebugActive)
-                    Debug.Log("requested object doesn't exist in selection collection. Ignoring remove command");
+                    STKDebugLogger.LogStatement(_isDebugActive, $"object ({existingSelection.name}, ID:{GetInstanceID()}) doesn't exist in selection collection");
             }
 
         }
@@ -117,9 +113,6 @@ namespace SullysToolkit
             {
                 _selectionList = new List<GameObject>();
                 _selectionList.Add(newSelection);
-
-                if (_isDebugActive)
-                    Debug.Log("selection overridden successfully");
             }
         }
 

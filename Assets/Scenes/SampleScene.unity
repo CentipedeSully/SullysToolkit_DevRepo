@@ -187,7 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0.6509434, g: 0.6509434, b: 0.6509434, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -900,7 +900,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0.6509804, g: 0.6509804, b: 0.6509804, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1566,18 +1566,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2021944920}
     m_Modifications:
-    - target: {fileID: 5215204126475537504, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
-      propertyPath: _rows
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 5215204126475537504, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
-      propertyPath: _columns
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 5215204126475537504, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
-      propertyPath: _cellSize
-      value: 1.5
-      objectReference: {fileID: 0}
     - target: {fileID: 5215204126479897628, guid: 8de11bf5823132743bf9c9009c985075, type: 3}
       propertyPath: m_Name
       value: GameBoard & GamePiece Test Setting
@@ -2526,8 +2514,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -122.5, y: -190}
-  m_SizeDelta: {x: -505, y: -420}
+  m_AnchoredPosition: {x: -60, y: -190}
+  m_SizeDelta: {x: -380, y: -420}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1316176521
 MonoBehaviour:
@@ -2816,7 +2804,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0.6509804, g: 0.6509804, b: 0.6509804, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
