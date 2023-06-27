@@ -2,8 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop
 {
+    public enum GamePieceType
+    {
+        Terrain,
+        PointOfInterest,
+        Unit
+    }
 
     public class GamePiece : MonoBehaviour
     {

@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SullysToolkit.TableTop;
+using SullysToolkit.TableTop.RPG;
 
 
 namespace SullysToolkit
 {
-    public class GameBoardAndGamePieceTester : MonoBehaviour, IConflictLogger
+    public class GameBoardAndGamePieceTester : MonoBehaviour, IRPGConflictLogger
     {
         //Delcarations
         [Header("Command Settings")]
@@ -305,7 +307,7 @@ namespace SullysToolkit
 
         private void MovePiece(GamePiece gamePiece)
         {
-            IMoveablePiece moveablePiece = gamePiece.GetComponent<IMoveablePiece>();
+            IMoveableRPGPiece moveablePiece = gamePiece.GetComponent<IMoveableRPGPiece>();
 
             if (moveablePiece != null)
                 moveablePiece.MoveToNeighborCell((_xPosition, _yPosition));
@@ -327,21 +329,21 @@ namespace SullysToolkit
 
         private void DamagePiece(GamePiece gamepiece)
         {
-            IDamageablePiece damageablePiece = gamepiece.GetComponent<IDamageablePiece>();
+            IDamageableRPGPiece damageablePiece = gamepiece.GetComponent<IDamageableRPGPiece>();
             if (damageablePiece != null)
                 damageablePiece.RecieveDamage(_healthModifer);
         }
 
         private void HealPiece(GamePiece gamepiece)
         {
-            IHealablePiece healablePiece = gamepiece.GetComponent<IHealablePiece>();
+            IHealableRPGPiece healablePiece = gamepiece.GetComponent<IHealableRPGPiece>();
             if (healablePiece != null)
                 healablePiece.ReceiveHeals(_healthModifer);
         }
 
         private void LvUpPiece(GamePiece gamePiece)
         {
-            ILevelablePiece _lvlableGamePiece = gamePiece.GetComponent<ILevelablePiece>();
+            ILevelableRPGPiece _lvlableGamePiece = gamePiece.GetComponent<ILevelableRPGPiece>();
 
             if (_lvlableGamePiece != null)
                 _lvlableGamePiece.LvUp();
@@ -349,7 +351,7 @@ namespace SullysToolkit
 
         private void SetPieceLvToDesiredLv(GamePiece gamePiece)
         {
-            ILevelablePiece _lvlableGamePiece = gamePiece.GetComponent<ILevelablePiece>();
+            ILevelableRPGPiece _lvlableGamePiece = gamePiece.GetComponent<ILevelableRPGPiece>();
 
             if (_lvlableGamePiece != null)
                 _lvlableGamePiece.SetCurrentLv(_desiredLv);
@@ -357,7 +359,7 @@ namespace SullysToolkit
 
         private void AddExpToPiece(GamePiece gamePiece)
         {
-            ILevelablePiece _lvlableGamePiece = gamePiece.GetComponent<ILevelablePiece>();
+            ILevelableRPGPiece _lvlableGamePiece = gamePiece.GetComponent<ILevelableRPGPiece>();
 
             if (_lvlableGamePiece != null)
                 _lvlableGamePiece.GainExp(_expModifier);

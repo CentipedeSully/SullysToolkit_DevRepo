@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop
 {
     public enum GameBoardLayer
     {

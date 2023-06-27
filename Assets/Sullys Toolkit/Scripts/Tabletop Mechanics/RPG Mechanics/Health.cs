@@ -4,9 +4,9 @@ using UnityEngine;
 
 
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class Health : MonoBehaviour, IHealthManager, IHealablePiece, IDamageablePiece, IRegenerateable, IDisplayableAttribute
+    public class Health : MonoBehaviour, IHealthManager, IHealableRPGPiece, IDamageableRPGPiece, IRegenerateable, IDisplayableRPGAttribute
     {
 
         //Declarations

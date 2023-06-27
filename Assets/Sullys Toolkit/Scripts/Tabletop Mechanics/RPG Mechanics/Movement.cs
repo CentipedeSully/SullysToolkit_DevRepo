@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class Movement : MonoBehaviour, IMoveablePiece, IRegenerateable, IDisplayableAttribute
+    public class Movement : MonoBehaviour, IMoveableRPGPiece, IRegenerateable, IDisplayableRPGAttribute
     {
         //Declarations
         [Header("Movement Attributes")]

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class GamePieceController : MonoBehaviour, ITurnListener, ISelectionCache<GameObject>
+    public class GamePieceControllerRPG : MonoBehaviour, ITurnListener, ISelectionCache<GameObject>
     {
         //Declarations
         [Header("Controller Settings")]
@@ -100,7 +100,7 @@ namespace SullysToolkit
                 else
                 {
                     STKDebugLogger.LogStatement(_isDebugActive, $"Right Click on good position. Unimplemented, but good ^_^");
-                    
+                    OnActionPerformed?.Invoke();
                 }
             }
         }
@@ -257,7 +257,7 @@ namespace SullysToolkit
         private void MoveGamePieceInDirection(GamePiece movingPiece,(int,int) xyDirection)
         {
             STKDebugLogger.LogStatement(_isDebugActive, $"Attempting to move gamePiece ({movingPiece?.name},ID: {movingPiece?.GetInstanceID()})");
-            IMoveablePiece validatedMoveablePiece = movingPiece?.GetComponent<IMoveablePiece>();
+            IMoveableRPGPiece validatedMoveablePiece = movingPiece?.GetComponent<IMoveableRPGPiece>();
             if (validatedMoveablePiece != null)
                 validatedMoveablePiece.MoveToNeighborCell(xyDirection);
             else
@@ -270,7 +270,7 @@ namespace SullysToolkit
                 $"Actor ({actorPiece?.name}, ID: {actorPiece?.GetInstanceID()})\n" +
                 $"Subject ({subjectPiece?.name}, ID: {subjectPiece?.GetInstanceID()})");
 
-            IInteractablePiece validatedInteractablePiece = subjectPiece?.GetComponent<IInteractablePiece>();
+            IRPGInteractablePiece validatedInteractablePiece = subjectPiece?.GetComponent<IRPGInteractablePiece>();
 
             if (validatedInteractablePiece != null)
                 validatedInteractablePiece.TriggerInteractionEvent(actorPiece);

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class TriggerConflict : MonoBehaviour, IInteractablePiece
+    public class TriggerConflict : MonoBehaviour, IRPGInteractablePiece
     {
         //Declarations
         [SerializeField] private List<string> _enemyFactions;
         [SerializeField] private GamePiece _gamePieceRef;
         [SerializeField] private bool _isDebugActive = true;
-        private IIdentityDefinition _identityRef;
-        private IAttributes _attributesRef;
+        private IRPGIdentityDefinition _identityRef;
+        private IRPGAttributes _attributesRef;
 
         //Events
         public delegate void ConflictTriggeredEvent(GamePiece attacker, GamePiece defender);
@@ -30,8 +30,8 @@ namespace SullysToolkit
         private void InitializeReferences()
         {
             _gamePieceRef = GetComponent<GamePiece>();
-            _identityRef = _gamePieceRef.GetComponent<IIdentityDefinition>();
-            _attributesRef = _gamePieceRef.GetComponent<IAttributes>();
+            _identityRef = _gamePieceRef.GetComponent<IRPGIdentityDefinition>();
+            _attributesRef = _gamePieceRef.GetComponent<IRPGAttributes>();
         }
 
 
@@ -43,7 +43,7 @@ namespace SullysToolkit
 
         public void TriggerInteractionEvent(GamePiece performer)
         {
-            IAttributes attackerAttributes = performer?.GetComponent<IAttributes>();
+            IRPGAttributes attackerAttributes = performer?.GetComponent<IRPGAttributes>();
             if (attackerAttributes == null)
             {
                 STKDebugLogger.LogError($"gamePiece {performer} has no attributes to deduct Ap from");
@@ -53,7 +53,7 @@ namespace SullysToolkit
             else if (attackerAttributes.GetCurrentActionPoints()  > 0)
             {
                 STKDebugLogger.LogStatement(_isDebugActive, $"Comparing the Identities of self(defender) and Attacker({performer})...");
-                IIdentityDefinition identifiedGamePiece = performer.GetComponent<IIdentityDefinition>();
+                IRPGIdentityDefinition identifiedGamePiece = performer.GetComponent<IRPGIdentityDefinition>();
 
                 if (_enemyFactions.Contains(identifiedGamePiece.GetFaction()))
                 {

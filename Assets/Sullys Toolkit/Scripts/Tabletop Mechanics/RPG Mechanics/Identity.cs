@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class Identity : MonoBehaviour, IIdentityDefinition, IDisplayableAttribute
+    public class Identity : MonoBehaviour, IRPGIdentityDefinition, IDisplayableRPGAttribute
     {
         //Declarations
         [SerializeField] private string _name = "Unnamed Piece";

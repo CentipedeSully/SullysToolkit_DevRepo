@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class GamePieceDisplayer : MonoSingleton<GamePieceDisplayer>
+    public class GamePieceDisplayerRPG : MonoSingleton<GamePieceDisplayerRPG>
     {
         //Declarations
         [Header("Overall Display Settings")]

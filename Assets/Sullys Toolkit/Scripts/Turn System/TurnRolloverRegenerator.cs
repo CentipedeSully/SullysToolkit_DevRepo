@@ -5,6 +5,11 @@ using UnityEngine;
 
 namespace SullysToolkit
 {
+    public interface IRegenerateable
+    {
+        void RegenerateAttributes();
+    }
+
     public class TurnRolloverRegenerator : MonoBehaviour, ITurnListener
     {
         //Declarations

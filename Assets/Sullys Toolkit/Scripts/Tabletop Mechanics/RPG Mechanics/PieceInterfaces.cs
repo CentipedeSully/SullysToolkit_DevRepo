@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public enum GamePieceType
-    {
-        Terrain,
-        PointOfInterest,
-        Unit
-    }
+ 
 
 
-    public interface IMoveablePiece
+    public interface IMoveableRPGPiece
     {
         GamePiece GetGamePiece();
 
@@ -27,14 +22,14 @@ namespace SullysToolkit
         void SetMaxMovePoints(int value);
     }
 
-    public interface IDamageablePiece
+    public interface IDamageableRPGPiece
     {
         GamePiece GetGamePiece();
 
         void RecieveDamage(int value);
     }
 
-    public interface IHealablePiece
+    public interface IHealableRPGPiece
     {
         GamePiece GetGamePiece();
 
@@ -54,7 +49,7 @@ namespace SullysToolkit
         void KillThisInstance();
     }
 
-    public interface ILevelablePiece
+    public interface ILevelableRPGPiece
     {
         GamePiece GetGamePiece();
 
@@ -77,7 +72,7 @@ namespace SullysToolkit
         void ClearExp();
     }
 
-    public interface IAttributes
+    public interface IRPGAttributes
     {
         int GetAtkDie();
 
@@ -108,17 +103,12 @@ namespace SullysToolkit
         void SetMaxActionPoints(int value);
     }
 
-    public interface IConflictLogger
+    public interface IRPGConflictLogger
     {
         void LogConflict(int attackerAtkScore, int attackerDmgScore, int attackerDef, int defenderAtkScore, int defenderDmgScore, int defenderDef);
     }
 
-    public interface IRegenerateable
-    {
-        void RegenerateAttributes();
-    }
-
-    public interface IIdentityDefinition
+    public interface IRPGIdentityDefinition
     {
         GamePiece GetGamePiece();
 
@@ -140,14 +130,14 @@ namespace SullysToolkit
 
     }
 
-    public interface IExperienceProvider
+    public interface IRPGExperienceProvider
     {
         int GetExpValue();
 
         void SetExpValue(int value);
     }
 
-    public interface IInteractablePiece
+    public interface IRPGInteractablePiece
     {
         GamePiece GetGamePiece();
 
@@ -174,7 +164,7 @@ namespace SullysToolkit
         void SetupDisplayOnStart();
     }
 
-    public interface IDisplayableAttribute
+    public interface IDisplayableRPGAttribute
     {
         void UpdateAttributeInDisplay(IUIDisplayController displayController);
     }

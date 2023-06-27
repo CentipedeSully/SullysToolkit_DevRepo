@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class GrowthBehavior : MonoBehaviour, ILevelablePiece
+    public class GrowthBehavior : MonoBehaviour, ILevelableRPGPiece
     {
         //Declarations
         [Header("Current Lvl Stats")]
@@ -35,8 +35,8 @@ namespace SullysToolkit
         [Header("References")]
         [SerializeField] private GamePiece _gamePieceReference;
         [SerializeField] private IHealthManager _healthReference;
-        [SerializeField] private IMoveablePiece _movementReference;
-        [SerializeField] private IAttributes _attributesRef;
+        [SerializeField] private IMoveableRPGPiece _movementReference;
+        [SerializeField] private IRPGAttributes _attributesRef;
 
 
 
@@ -58,8 +58,8 @@ namespace SullysToolkit
         {
             _gamePieceReference = GetComponent<GamePiece>();
             _healthReference = GetComponent<IHealthManager>();
-            _movementReference = GetComponent<IMoveablePiece>();
-            _attributesRef = GetComponent<IAttributes>();
+            _movementReference = GetComponent<IMoveableRPGPiece>();
+            _attributesRef = GetComponent<IRPGAttributes>();
 
             if (_healthReference != null)
                 _isHealthPresent = true;

@@ -4,9 +4,9 @@ using UnityEngine;
 
 
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class ExpPool : MonoBehaviour, IInteractablePiece, IExperienceProvider, IDisplayableAttribute
+    public class ExpPool : MonoBehaviour, IRPGInteractablePiece, IRPGExperienceProvider, IDisplayableRPGAttribute
     {
         //Declarations
         [Header("Settings")]
@@ -35,7 +35,7 @@ namespace SullysToolkit
             _displayControllerRef = GetComponent<IUIDisplayController>();
         }
 
-        private void GrantExpToPerformerAndTriggerEvent(ILevelablePiece gamePiece)
+        private void GrantExpToPerformerAndTriggerEvent(ILevelableRPGPiece gamePiece)
         {
             if (gamePiece == null)
             {
@@ -44,7 +44,7 @@ namespace SullysToolkit
             }
 
 
-            IAttributes gPieceAtrtibutes = gamePiece.GetGamePiece().GetComponent<IAttributes>();
+            IRPGAttributes gPieceAtrtibutes = gamePiece.GetGamePiece().GetComponent<IRPGAttributes>();
             if (gPieceAtrtibutes == null)
             {
                 STKDebugLogger.LogStatement(_isDebugActive, $"Performer {gamePiece} of ExpPool Interaction has No Attributes. Ignoring interaction");
@@ -76,7 +76,7 @@ namespace SullysToolkit
 
         public void TriggerInteractionEvent(GamePiece performer)
         {
-            ILevelablePiece levelableGamePiece = performer?.GetComponent<ILevelablePiece>();
+            ILevelableRPGPiece levelableGamePiece = performer?.GetComponent<ILevelableRPGPiece>();
             GrantExpToPerformerAndTriggerEvent(levelableGamePiece);
         }
 

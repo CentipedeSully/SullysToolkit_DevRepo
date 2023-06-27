@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop
 {
     public static class DieRoller
     {

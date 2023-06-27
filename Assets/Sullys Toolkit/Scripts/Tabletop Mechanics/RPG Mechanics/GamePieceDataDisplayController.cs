@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
     public class GamePieceDataDisplayController : MonoBehaviour, IUIDisplayController
     {
@@ -17,12 +17,12 @@ namespace SullysToolkit
 
         [Header("Debugging Utilities")]
         [SerializeField] private bool _updateDataCmd = false;
-        [SerializeField] private IAttributes _attributeRef;
-        [SerializeField] private IIdentityDefinition _identityRef;
+        [SerializeField] private IRPGAttributes _attributeRef;
+        [SerializeField] private IRPGIdentityDefinition _identityRef;
         [SerializeField] private IHealthManager _healthRef;
         [SerializeField] private GamePiece _gamePieceRef;
-        [SerializeField] private IMoveablePiece _movementRef;
-        [SerializeField] private IExperienceProvider _expProviderRef;
+        [SerializeField] private IMoveableRPGPiece _movementRef;
+        [SerializeField] private IRPGExperienceProvider _expProviderRef;
 
         //Monobehaviours
         private void Awake()
@@ -46,11 +46,11 @@ namespace SullysToolkit
         private void InitializeReferences()
         {
             _gamePieceRef = GetComponent<GamePiece>();
-            _attributeRef = _gamePieceRef?.GetComponent<IAttributes>();
-            _identityRef = _gamePieceRef?.GetComponent<IIdentityDefinition>();
+            _attributeRef = _gamePieceRef?.GetComponent<IRPGAttributes>();
+            _identityRef = _gamePieceRef?.GetComponent<IRPGIdentityDefinition>();
             _healthRef = _gamePieceRef?.GetComponent<IHealthManager>();
-            _movementRef = _gamePieceRef?.GetComponent<IMoveablePiece>();
-            _expProviderRef = _gamePieceRef?.GetComponent<IExperienceProvider>();
+            _movementRef = _gamePieceRef?.GetComponent<IMoveableRPGPiece>();
+            _expProviderRef = _gamePieceRef?.GetComponent<IRPGExperienceProvider>();
         }
 
         private void ListenForDebugCommands()
@@ -122,13 +122,13 @@ namespace SullysToolkit
                 switch (_displayType)
                 {
                     case GamePieceType.Unit:
-                        _displayObject = GamePieceDisplayer.Instance.GetUnitDisplay();
+                        _displayObject = GamePieceDisplayerRPG.Instance.GetUnitDisplay();
                         break;
                     case GamePieceType.PointOfInterest:
-                        _displayObject = GamePieceDisplayer.Instance.GetPOIDisplay();
+                        _displayObject = GamePieceDisplayerRPG.Instance.GetPOIDisplay();
                         break;
                     case GamePieceType.Terrain:
-                        _displayObject = GamePieceDisplayer.Instance.GetTerrainDisplay();
+                        _displayObject = GamePieceDisplayerRPG.Instance.GetTerrainDisplay();
                         break;
                 }
             }
@@ -146,15 +146,15 @@ namespace SullysToolkit
             if (_isDisplayReady)
             {
                 if (_displayType == GamePieceType.Unit)
-                    GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _healthRef.GetCurrentHealth(), _attributeRef.GetAtkModifier(),
+                    GamePieceDisplayerRPG.Instance.UpdateDisplayData(_identityRef.GetName(), _healthRef.GetCurrentHealth(), _attributeRef.GetAtkModifier(),
                         _attributeRef.GetDef(), _attributeRef.GetDamageDie(), _attributeRef.GetDamageModifier(), _attributeRef.GetCurrentActionPoints(),
                         _movementRef.GetCurrentMovePoints());
 
                 else if (_displayType == GamePieceType.PointOfInterest)
-                    GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _identityRef.GetDescription(), _expProviderRef.GetExpValue());
+                    GamePieceDisplayerRPG.Instance.UpdateDisplayData(_identityRef.GetName(), _identityRef.GetDescription(), _expProviderRef.GetExpValue());
 
                 else if (_displayType == GamePieceType.Terrain)
-                    GamePieceDisplayer.Instance.UpdateDisplayData(_identityRef.GetName(), _identityRef.GetDescription());
+                    GamePieceDisplayerRPG.Instance.UpdateDisplayData(_identityRef.GetName(), _identityRef.GetDescription());
             }
         }
     }

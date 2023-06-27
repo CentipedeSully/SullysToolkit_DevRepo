@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace SullysToolkit
+namespace SullysToolkit.TableTop.RPG
 {
-    public class UnitAttributes : MonoBehaviour, IAttributes, IRegenerateable, IExperienceProvider, IDisplayableAttribute
+    public class UnitAttributes : MonoBehaviour, IRPGAttributes, IRegenerateable, IRPGExperienceProvider, IDisplayableRPGAttribute
     {
         //Declarations
         [SerializeField] private int _currentActionPoints = 1;
